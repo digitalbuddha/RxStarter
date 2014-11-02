@@ -45,7 +45,8 @@ public class GithubActivity extends DemoBaseActivity {
     public void getNumberOfReposForUser() {
         api.repos("digitalbuddha")
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe
                 {   //onNext
                     makeToast(it)
                 }
