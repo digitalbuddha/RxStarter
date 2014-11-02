@@ -4,8 +4,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.1'
-    }
+        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'me.champeau.gradle:gradle-groovy-android-plugin:0.3.4'    }
 }
 
 allprojects {
@@ -17,6 +17,7 @@ allprojects {
                 username = "${artifactory_user}"
                 password = "${artifactory_password}"
             }
+
         }
     }
 }

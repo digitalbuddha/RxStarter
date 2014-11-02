@@ -13,48 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.daggerdemo.dagger;
-
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-
-import com.digitalbuddha.daggerdemo.DemoApplication;
-
-import java.util.Arrays;
-import java.util.List;
-
-import dagger.ObjectGraph;
-import de.greenrobot.event.EventBus;
+package com.digitalbuddha.daggerdemo.dagger
+import android.os.Bundle
+import android.support.v4.app.FragmentActivity
+import com.digitalbuddha.daggerdemo.DemoApplication
+import dagger.ObjectGraph
+import groovy.transform.CompileStatic
 
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
  */
+@CompileStatic
+
 public abstract class DemoBaseActivity extends FragmentActivity {
-    private ObjectGraph activityGraph;
+     ObjectGraph activityGraph
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate savedInstanceState
 
         // Create the activity graph by .plus-ing our modules onto the application graph.
-        DemoApplication application = (DemoApplication) getApplication();
-        activityGraph = application.getApplicationGraph().plus(getModules().toArray());
+        DemoApplication application = (DemoApplication) getApplication()
+        activityGraph = application.getApplicationGraph().plus getModules().toArray()
 
         // Inject ourselves so subclasses will have dependencies fulfilled when this method returns.
-        activityGraph.inject(this);
-        EventBus.getDefault().register(this);
-
+        activityGraph.inject this
     }
 
     @Override
     protected void onDestroy() {
         // Eagerly clear the reference to the activity graph to allow it to be garbage collected as
         // soon as possible.
-        activityGraph = null;
+        activityGraph = null
 
-        super.onDestroy();
+        super.onDestroy()
     }
 
     /**
@@ -63,13 +57,13 @@ public abstract class DemoBaseActivity extends FragmentActivity {
      * calling {@code super.getModules()}.
      */
     protected List<Object> getModules() {
-        return Arrays.<Object>asList(new ActivityModule(this));
+        return Arrays.<Object>asList(new ActivityModule(this))
     }
 
     /**
      * Inject the supplied {@code object} using the activity-specific graph.
      */
-    public void inject(Object object) {
-        activityGraph.inject(object);
+    public void inject(object) {
+        activityGraph.inject object
     }
 }

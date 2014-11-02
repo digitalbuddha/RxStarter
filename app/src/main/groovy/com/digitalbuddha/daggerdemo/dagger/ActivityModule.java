@@ -16,26 +16,33 @@
 package com.digitalbuddha.daggerdemo.dagger;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
-import javax.inject.Inject;
+import com.digitalbuddha.daggerdemo.ui.GithubActivity;
 
-import de.greenrobot.event.EventBus;
+import javax.inject.Singleton;
 
-/** Base fragment which performs injection using the activity object graph of its parent. */
-public class DemoBaseFragment extends Fragment {
-    @Inject
-    @ForActivity
-    public Context context;
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    ((DemoBaseActivity) getActivity()).inject(this);
-        EventBus.getDefault().register(this);
+import dagger.Module;
+import dagger.Provides;
 
+@Module(
+        injects = {
+                GithubActivity.class
+        },
+        addsTo = AndroidModule.class,
+        library = true
+)
+public class ActivityModule {
+    private final DemoBaseActivity activity;
+
+    public ActivityModule(DemoBaseActivity activity) {
+        this.activity = activity;
     }
-    public void onEventMainThread(EventBus event)
-    {
 
-    } //
+    @Provides
+    @Singleton
+    @ForActivity
+    Context provideActivityContext() {
+        return activity;
+    }
+
 }
