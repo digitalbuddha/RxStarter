@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.digitalbuddha.rx
+
 import android.app.Application
 import com.digitalbuddha.rx.dagger.AndroidModule
 import dagger.ObjectGraph
@@ -21,23 +22,20 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 public class DemoApplication extends Application {
-  private ObjectGraph applicationGraph;
+    ObjectGraph getApplicationGraph() {
+        return applicationGraph
+    }
 
-  @Override public void onCreate() {
-    super.onCreate();
 
-    applicationGraph = ObjectGraph.create(getModules().toArray())
-  }
+    ObjectGraph applicationGraph
 
-  /**
-   * A list of modules to use for the application graph. Subclasses can override this method to
-   * provide additional modules provided they call {@code super.getModules()}.
-   */
-  protected List<Object> getModules() {
-    return Arrays.<Object>asList(new AndroidModule(this));
-  }
+    @Override
+    public void onCreate() {
+        super.onCreate()
+        applicationGraph = ObjectGraph.create(modules.toArray())
+    }
 
-  public ObjectGraph getApplicationGraph() {
-    return applicationGraph;
-  }
+    protected List<Object> getModules() {
+        return Arrays.<Object>asList(new AndroidModule(this));
+    }
 }
