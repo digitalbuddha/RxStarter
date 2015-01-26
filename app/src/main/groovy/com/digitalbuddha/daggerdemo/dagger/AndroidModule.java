@@ -18,6 +18,7 @@ import android.content.Context;
 
 import com.digitalbuddha.daggerdemo.DemoApplication;
 import com.digitalbuddha.daggerdemo.rest.Github;
+import com.digitalbuddha.daggerdemo.store.GitHubStore;
 
 import javax.inject.Singleton;
 
@@ -25,7 +26,10 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit.RestAdapter;
 
-@Module(library = true)
+@Module(library = true,
+        injects = {
+                GitHubStore.class
+        })
 public class AndroidModule {
     DemoApplication application;
     RestAdapter restAdapter;
