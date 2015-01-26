@@ -30,22 +30,18 @@ public class GithubActivity extends DemoBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate savedInstanceState
         contentView = activity_post
-        initButton() //onError
+        initButton()
     }
 
     private initButton() {
         clicks(view(button))
-                .flatMap(
-                { gitHubStore.get("digitalbuddha") }).observeOn(mainThread())
-                .subscribe(
-                { makeToast it.payload },//onNext
-                { makeText(context, it.getCause().toString(), LENGTH_SHORT) show() })
+                .flatMap({ gitHubStore.get("digitalbuddha") }).observeOn(mainThread())
+                .subscribe({ makeToast it.payload },//onNext
+                { makeText(context, it.getCause().toString(), LENGTH_SHORT) show() })//onError
     }
-
 
     private void makeToast(ArrayList<Repo> it) {
         def description = it.get(0).clone_url
         makeText(context, description, LENGTH_SHORT).show()
     }
-
 }
