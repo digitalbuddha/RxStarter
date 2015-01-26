@@ -19,16 +19,16 @@ public abstract class ObservableStore<T extends Serializable, V> extends Abstrac
         initialize();
     }
 
-    public Observable<BaseModel<V, T>> allObserverable(final V request) {
-        return networkObservable(request).startWith(getCachedValue(request));
+    public Observable<BaseModel<V, T>> all(final V request) {
+        return fresh(request).startWith(getCachedValue(request));
     }
 
-    public Observable<BaseModel<V, T>> cachedObservable(final V request) {
+    public Observable<BaseModel<V, T>> cached(final V request) {
         return observabler(getCachedValue(request));
     }
 
 
-    public Observable<BaseModel<V, T>> networkObservable(final V request) {
+    public Observable<BaseModel<V, T>> fresh(final V request) {
         if (!isInFlightNetwork(request)) {
             return response(request);
         } else {
@@ -40,7 +40,7 @@ public abstract class ObservableStore<T extends Serializable, V> extends Abstrac
         return observabler(getCachedValue(request)).flatMap(new Func1<BaseModel<V, T>, Observable<BaseModel<V, T>>>() {
             @Override
             public Observable<BaseModel<V, T>> call(BaseModel<V, T> cachedValue) {
-                return cachedValue == null ? networkObservable(request) : observabler(cachedValue);
+                return cachedValue == null ? fresh(request) : observabler(cachedValue);
             }
         }).subscribeOn(Schedulers.io());
     }

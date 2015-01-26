@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.rx.util;
+package com.digitalbuddha.rx.util
+
+import groovy.transform.CompileStatic;
 /**
  * <p>Exception thrown when the Serialization process fails.</p>
  *
@@ -24,19 +26,20 @@ package com.digitalbuddha.rx.util;
  * @since 1.0
  * @version $Id$
  */
+@CompileStatic
 public class SerializationException extends RuntimeException {
     /**
      * Required for serialization support.
      *
      * @see java.io.Serializable
      */
-    private static final long serialVersionUID = 4029025366392702726L;
+    private static final serialVersionUID = 4029025366392702726L;
     /**
      * <p>Constructs a new {@code SerializationException} without specified
      * detail message.</p>
      */
     public SerializationException() {
-        super();
+        super()
     }
     /**
      * <p>Constructs a new {@code SerializationException} with specified
@@ -45,7 +48,7 @@ public class SerializationException extends RuntimeException {
      * @param msg  The error message.
      */
     public SerializationException(final String msg) {
-        super(msg);
+        super(msg)
     }
     /**
      * <p>Constructs a new {@code SerializationException} with specified
@@ -55,7 +58,7 @@ public class SerializationException extends RuntimeException {
      *  that caused this exception to be thrown.
      */
     public SerializationException(final Throwable cause) {
-        super(cause);
+        super(cause)
     }
     /**
      * <p>Constructs a new {@code SerializationException} with specified
@@ -66,6 +69,6 @@ public class SerializationException extends RuntimeException {
      *  that caused this exception to be thrown.
      */
     public SerializationException(final String msg, final Throwable cause) {
-        super(msg, cause);
+        super(msg, cause)
     }
 }
