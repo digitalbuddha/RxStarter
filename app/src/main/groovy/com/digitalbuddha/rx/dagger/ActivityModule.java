@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.daggerdemo.dagger;
+package com.digitalbuddha.rx.dagger;
 
 import android.content.Context;
 
-import com.digitalbuddha.daggerdemo.ui.GithubActivity;
+import com.digitalbuddha.rx.ui.GithubActivity;
 
 import javax.inject.Singleton;
 

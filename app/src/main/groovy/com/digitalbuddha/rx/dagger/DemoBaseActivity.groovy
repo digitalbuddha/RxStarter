@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.daggerdemo.dagger
+package com.digitalbuddha.rx.dagger
+
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import com.digitalbuddha.daggerdemo.DemoApplication
+import com.digitalbuddha.rx.DemoApplication
 import dagger.ObjectGraph
 import groovy.transform.CompileStatic
 
@@ -26,20 +27,21 @@ import groovy.transform.CompileStatic
 @CompileStatic
 
 public abstract class DemoBaseActivity extends FragmentActivity {
-     ObjectGraph activityGraph
-
+    ObjectGraph activityGraph
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate savedInstanceState
 
-        // Create the activity graph by .plus-ing our modules onto the application graph.
+// Create the activity graph by .plus-ing our modules onto the application graph.
         DemoApplication application = (DemoApplication) getApplication()
         activityGraph = application.getApplicationGraph().plus getModules().toArray()
 
-        // Inject ourselves so subclasses will have dependencies fulfilled when this method returns.
+// Inject ourselves so subclasses will have dependencies fulfilled when this method returns.
         activityGraph.inject this
+
+
     }
 
     @Override
@@ -54,10 +56,10 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     /**
      * A list of modules to use for the individual activity graph. Subclasses can override this
      * method to provide additional modules provided they call and include the modules returned by
-     * calling {@code super.getModules()}.
+     * calling {@code super.getModules ( )}.
      */
     protected List<Object> getModules() {
-        return Arrays.<Object>asList(new ActivityModule(this))
+        return Arrays.<Object> asList(new ActivityModule(this))
     }
 
     /**
@@ -65,5 +67,9 @@ public abstract class DemoBaseActivity extends FragmentActivity {
      */
     public void inject(object) {
         activityGraph.inject object
+    }
+
+    protected view(int button) {
+        findViewById(button)
     }
 }

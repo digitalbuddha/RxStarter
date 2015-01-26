@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.daggerdemo.dagger;
+package com.digitalbuddha.rx.dagger;
 
 import java.lang.annotation.Retention;
 import javax.inject.Qualifier;
@@ -21,5 +21,5 @@ import javax.inject.Qualifier;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Qualifier @Retention(RUNTIME)
-public @interface ForApplication {
+public @interface ForActivity {
 }

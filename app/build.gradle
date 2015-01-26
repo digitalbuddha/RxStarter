@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.champeau.gradle.groovy-android'
+apply plugin: 'groovyx.grooid.groovy-android'
 
 android {
     compileSdkVersion 19
@@ -10,10 +10,13 @@ android {
         minSdkVersion 15
         targetSdkVersion 17
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 
     buildTypes {
         release {
-            runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
@@ -43,9 +46,9 @@ dependencies
             provided 'com.squareup.dagger:dagger-compiler:1.2.1'
             compile 'com.squareup.dagger:dagger:1.2.1'
             compile 'com.squareup.retrofit:retrofit:1.6.1'
-            compile 'com.arasthel:swissknife:+'
+            compile 'org.codehaus.groovy:groovy:2.4.0:grooid'
+            compile 'io.reactivex:rxandroid:0.22.0'
             compile 'com.android.support:support-v13:20.+'
             compile 'com.android.support:appcompat-v7:20.0.0'
-            compile 'org.codehaus.groovy:groovy:2.4.0-beta-3:grooid'
-            compile 'com.netflix.rxjava:rxjava-android:+'
+
         }

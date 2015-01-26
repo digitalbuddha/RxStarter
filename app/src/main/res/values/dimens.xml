@@ -2,4 +2,16 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <declare-styleable name="ScalableLayout">
+        <attr name="scale_base_width" 		format="float" />
+        <attr name="scale_base_height" 		format="float" />
+        <attr name="scale_textsize" 	format="float" />
+        <attr name="scale_top" 			format="float" />
+        <attr name="scale_left" 		format="float" />
+        <attr name="scale_width" 		format="float" />
+        <attr name="scale_height" 		format="float" />
+        <attr name="textview_wrapcontent_direction" 		format="string" />
+        <attr name="textview_wrapcontent_resizesurrounded" 	format="boolean" />
+    </declare-styleable>
 </resources>

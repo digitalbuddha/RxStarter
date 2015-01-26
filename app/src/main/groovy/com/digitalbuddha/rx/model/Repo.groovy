@@ -1,4 +1,4 @@
-package com.digitalbuddha.daggerdemo.model
+package com.digitalbuddha.rx.model
 
 import groovy.transform.CompileStatic;
 
@@ -7,7 +7,7 @@ import groovy.transform.CompileStatic;
  */
 @CompileStatic
 
-public class Repo {
+public class Repo implements Serializable {
 
     String clone_url
     String description
