@@ -14,7 +14,6 @@ public class GitHubStore extends ObservableStore<ArrayList<Repo>, String> {
     GitHubStore() {
     }
 
-
     @Override
     public ArrayList<Repo> load(String user) throws Exception {
         github.repos(user)

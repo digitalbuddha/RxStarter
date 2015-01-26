@@ -35,13 +35,13 @@ public class GithubActivity extends DemoBaseActivity {
 
     private initButton() {
         clicks(view(button))
-                .flatMap({ gitHubStore.get("digitalbuddha") }).observeOn(mainThread())
+                .flatMap({ gitHubStore.fresh("digitalbuddha") }).observeOn(mainThread())
                 .subscribe({ makeToast it.payload },//onNext
                 { makeText(context, it.getCause().toString(), LENGTH_SHORT) show() })//onError
     }
 
     private void makeToast(ArrayList<Repo> it) {
-        def description = it.get(0).clone_url
-        makeText(context, description, LENGTH_SHORT).show()
+        def url = it.get(0).clone_url
+        makeText(context, url, LENGTH_SHORT).show()
     }
 }

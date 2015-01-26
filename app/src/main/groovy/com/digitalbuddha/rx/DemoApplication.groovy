@@ -22,12 +22,20 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 public class DemoApplication extends Application {
-    def ObjectGraph applicationGraph
-    final modules = Arrays.<Object> asList(new AndroidModule(this))
+    ObjectGraph getApplicationGraph() {
+        return applicationGraph
+    }
+
+
+    ObjectGraph applicationGraph
 
     @Override
     public void onCreate() {
         super.onCreate()
         applicationGraph = ObjectGraph.create(modules.toArray())
+    }
+
+    protected List<Object> getModules() {
+        return Arrays.<Object>asList(new AndroidModule(this));
     }
 }

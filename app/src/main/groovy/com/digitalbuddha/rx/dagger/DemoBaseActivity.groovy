@@ -17,6 +17,7 @@ package com.digitalbuddha.rx.dagger
 
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import android.view.View
 import com.digitalbuddha.rx.DemoApplication
 import dagger.ObjectGraph
 import groovy.transform.CompileStatic
@@ -31,7 +32,7 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate savedInstanceState
-        activityGraph = (application as DemoApplication).applicationGraph.plus modules.toArray()
+        activityGraph = ((DemoApplication)application).getApplicationGraph().plus(getModules().toArray())
         activityGraph.inject this
     }
 
@@ -41,11 +42,11 @@ public abstract class DemoBaseActivity extends FragmentActivity {
         super.onDestroy()
     }
 
-    protected getModules() {
+    protected List<Object> getModules() {
         Arrays.<Object> asList(new ActivityModule(this))
     }
 
-    protected view(int button) {
+    protected View view(int button) {
         findViewById button
     }
 }

@@ -8,6 +8,6 @@ import groovy.transform.CompileStatic;
 @CompileStatic
 public class Repo implements Serializable {
 
-    def clone_url
-    def description
+    String clone_url
+    String description
 }
