@@ -1,4 +1,4 @@
 DaggerStarter
 =============
 
-Sample Setup with Retrofit, RxJava (RxGroovy actually), Dagger and SwissKnife which is a dagger version of ButterKnife
+Sample Setup with Retrofit, RxJava  and Dagger.
