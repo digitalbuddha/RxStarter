@@ -1,6 +1,6 @@
-package com.digitalbuddha.daggerdemo.rest
+package com.digitalbuddha.rx.rest
 
-import com.digitalbuddha.daggerdemo.model.Repo
+import com.digitalbuddha.rx.model.Repo
 import groovy.transform.CompileStatic
 import retrofit.http.GET;
 

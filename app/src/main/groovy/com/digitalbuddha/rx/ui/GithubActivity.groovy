@@ -1,11 +1,11 @@
-package com.digitalbuddha.daggerdemo.ui
+package com.digitalbuddha.rx.ui
 
 import android.content.Context
 import android.os.Bundle
-import com.digitalbuddha.daggerdemo.dagger.DemoBaseActivity
-import com.digitalbuddha.daggerdemo.dagger.ForActivity
-import com.digitalbuddha.daggerdemo.model.Repo
-import com.digitalbuddha.daggerdemo.store.GitHubStore
+import com.digitalbuddha.rx.store.GitHubStore
+import com.digitalbuddha.rx.dagger.DemoBaseActivity
+import com.digitalbuddha.rx.dagger.ForActivity
+import com.digitalbuddha.rx.model.Repo
 import groovy.transform.CompileStatic
 
 import javax.inject.Inject

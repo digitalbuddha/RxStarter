@@ -1,4 +1,4 @@
-package com.digitalbuddha.daggerdemo.model
+package com.digitalbuddha.rx.model
 
 import groovy.transform.CompileStatic;
 

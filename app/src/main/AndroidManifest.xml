@@ -11,11 +11,11 @@
         android:targetSdkVersion="17" />
 
     <application
-        android:name="com.digitalbuddha.daggerdemo.DemoApplication"
+        android:name="com.digitalbuddha.rx.DemoApplication"
         android:label="@string/app_name">
 
         <activity
-            android:name="com.digitalbuddha.daggerdemo.ui.GithubActivity"
+            android:name="com.digitalbuddha.rx.ui.GithubActivity"
             android:label="@string/title_activity_post">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
