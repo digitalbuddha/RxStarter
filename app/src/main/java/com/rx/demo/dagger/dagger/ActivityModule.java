@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.rx.dagger;
+package com.rx.demo.dagger.dagger;
 
 import android.content.Context;
 
-import com.digitalbuddha.rx.ui.GithubActivity;
+import com.rx.demo.dagger.ui.MainActivity;
 
 import javax.inject.Singleton;
 
@@ -26,7 +26,7 @@ import dagger.Provides;
 
 @Module(
         injects = {
-                GithubActivity.class
+                MainActivity.class
         },
         addsTo = AndroidModule.class,
         library = true

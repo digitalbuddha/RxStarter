@@ -13,40 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.rx.dagger
+package com.rx.demo.dagger.dagger;
 
-import android.os.Bundle
-import android.support.v4.app.FragmentActivity
-import android.view.View
-import com.digitalbuddha.rx.DemoApplication
-import dagger.ObjectGraph
-import groovy.transform.CompileStatic
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+
+
+import java.util.Arrays;
+import java.util.List;
+
+import dagger.ObjectGraph;
+import groovy.transform.CompileStatic;
 
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
  */
 @CompileStatic
 public abstract class DemoBaseActivity extends FragmentActivity {
-    ObjectGraph activityGraph
+    ObjectGraph activityGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate savedInstanceState
-        activityGraph = ((DemoApplication)application).getApplicationGraph().plus(getModules().toArray())
-        activityGraph.inject this
+        super.onCreate (savedInstanceState);
+        activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
+        activityGraph.inject(this);
     }
 
     @Override
     protected void onDestroy() {
-        activityGraph = null
-        super.onDestroy()
+        activityGraph = null;
+        super.onDestroy();
     }
 
     protected List<Object> getModules() {
-        Arrays.<Object> asList(new ActivityModule(this))
+        return Arrays.<Object> asList(new ActivityModule(this));
     }
 
-    protected View view(int button) {
-        findViewById button
+    protected View view(int id) {
+       return findViewById(id);
     }
 }

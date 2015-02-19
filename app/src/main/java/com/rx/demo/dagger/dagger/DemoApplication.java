@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.digitalbuddha.rx
+package com.rx.demo.dagger.dagger;
 
-import android.app.Application
-import com.digitalbuddha.rx.dagger.AndroidModule
-import dagger.ObjectGraph
-import groovy.transform.CompileStatic
+import android.app.Application;
+
+import java.util.Arrays;
+import java.util.List;
+
+import dagger.ObjectGraph;
+import groovy.transform.CompileStatic;
 
 @CompileStatic
 public class DemoApplication extends Application {
-    ObjectGraph getApplicationGraph() {
-        return applicationGraph
+    public ObjectGraph getApplicationGraph() {
+        return applicationGraph;
     }
 
 
-    ObjectGraph applicationGraph
+    ObjectGraph applicationGraph;
 
     @Override
     public void onCreate() {
-        super.onCreate()
-        applicationGraph = ObjectGraph.create(modules.toArray())
+        super.onCreate();
+        applicationGraph = ObjectGraph.create(getModules().toArray());
     }
 
     protected List<Object> getModules() {
