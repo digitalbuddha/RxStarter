@@ -47,25 +47,20 @@ public class GithubActivity extends DemoBaseActivity {
         SwissKnife.inject this
         //define what actions to take when subscribing
         setupObservers()
-
         //create an observable for the api request call
         def requestObservable = gitHubStore.get(Math.floor(Math.random() * 500))
-
         //create another observable from request which will have only the payload
         def responseObservable = requestObservable.map({ it.payload })
-
         //when the screen loads, kick off an initial subscription to
         // the observable responsible for reloading all 3 suggestions
         subscribeWithAllObservers(responseObservable)
 
-        //on click of refresh all map to the response
-        def refreshAllObservable = clicks(refresh)
-                .flatMap({ responseObservable })
-        //
-        subscribeWithAllObservers(refreshAllObservable)
-
         //setup each of the click listeners for the X next to each suggestion
         //if a user clicks the X we should load a new suggestion
+        setupViewObservables(responseObservable)
+    }
+
+    private void setupViewObservables(responseObservable) {
         clicks(close1)
                 .flatMap({ responseObservable })
                 .map(new MapToSingleUser())
@@ -78,6 +73,11 @@ public class GithubActivity extends DemoBaseActivity {
                 .flatMap({ responseObservable })
                 .map(new MapToSingleUser())
                 .subscribe(reloadThirdUserObserver)
+
+        //we want all 3 observers (one for each suggestion)
+        //to be subscribed to the refresh all click once we map to the response
+        subscribeWithAllObservers(clicks(refresh)
+                .flatMap({ responseObservable }))
     }
 
     private void setupObservers() {
