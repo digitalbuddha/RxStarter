@@ -1,6 +1,6 @@
 package com.digitalbuddha.rx.rest
 
-import com.digitalbuddha.rx.model.Repo
+import com.digitalbuddha.rx.model.User
 import groovy.transform.CompileStatic
 import retrofit.http.GET;
 
@@ -11,6 +11,6 @@ import retrofit.http.Path
 
 @CompileStatic
 public interface Github {
-    @GET("/users/{userName}/repos")
-    ArrayList<Repo> repos(@Path("userName") String user)
+    @GET("/users")
+    ArrayList<User> repos(@Path("since") double randomOffset)
 }

@@ -40,7 +40,7 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    @ForActivity
+    @Activity
     Context provideActivityContext() {
         return activity;
     }

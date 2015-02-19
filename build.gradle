@@ -12,14 +12,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven {
-            url 'http://code.touchlab.co/artifactory/repo'
-            credentials {
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-            }
 
-        }
     }
 }
 

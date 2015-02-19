@@ -50,5 +50,7 @@ dependencies
             compile 'io.reactivex:rxandroid:0.22.0'
             compile 'com.android.support:support-v13:20.+'
             compile 'com.android.support:appcompat-v7:20.0.0'
+            compile "com.arasthel:swissknife:1.2.2"
+
 
         }

@@ -1,21 +1,18 @@
 package com.digitalbuddha.rx.store
 
 import com.digitalbuddha.rx.cache.ObservableStore
-import com.digitalbuddha.rx.model.Repo
+import com.digitalbuddha.rx.model.User
 import com.digitalbuddha.rx.rest.Github
 import groovy.transform.CompileStatic
 
 import javax.inject.Inject
 @CompileStatic
-public class GitHubStore extends ObservableStore<ArrayList<Repo>, String> {
+public class GitHubStore extends ObservableStore<ArrayList<User>, Double> {
     @Inject
-    protected Github github
-    @Inject
-    GitHubStore() {
-    }
+    protected Github api
 
     @Override
-    public ArrayList<Repo> load(String user) throws Exception {
-        github.repos(user)
+    public ArrayList<User> load(Double offset) throws Exception {
+        api.repos(offset)
     }
 }
