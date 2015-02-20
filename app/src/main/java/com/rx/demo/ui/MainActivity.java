@@ -17,12 +17,9 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import rx.Observable;
-import rx.Observer;
 import rx.android.events.OnClickEvent;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
@@ -31,159 +28,100 @@ import static rx.android.observables.ViewObservable.clicks;
 
 
 public class MainActivity extends DemoBaseActivity {
-
     @Inject
     public Github api;
     @Activity
     @Inject
     Context context;
 
-    private Observer<User> firstUserObserver;
-    private Observer<User> secondUserObserver;
-    private Observer<User> thirdUserObserver;
-    private Func1<OnClickEvent, Observable<ArrayList<User>>> clickToResponse;
-    private Func1<ArrayList<User>, User> randomUser;
-    private Observable<ArrayList<User>> refreshAllObservable;
-    private Observable<ArrayList<User>> usersObservable;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.suggestions_layout);
-        ButterKnife.inject(this);
-        //Slides on consuming observables
-        createObservers();
 
-        createUserObservable();
-
-        setupFunctions();
+        //Slides on consuming observables, actions and observers
+        getResponse();
 
         setupClickStreams();
 
-        subscribeWithAllObservers(refreshAllObservable);
+        subscribeWithAllObservers(getRefreshObservable());
 
-        subscribeWithAllObservers(usersObservable);
+        subscribeWithAllObservers(getUserObservable());
     }
-
-    private void createUserObservable() {
-        //slide on creating observables, then show how retrofit can do it for you
-        usersObservable = api.users().cache()  //slides on cache and other aggregates
-                .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
-                .subscribeOn(Schedulers.io());  //metion immutibility
-    }
-
-
-    private void setupFunctions() {
-        //slide on functions, mapping specifically
-        clickToResponse = onClickEvent -> usersObservable;
-        randomUser = users -> users.get(getRandomIndex(users.size()));
-    }
-
 
     private void setupClickStreams() {
         //slide everything is a stream including click events show double click buffering as well
-        refreshAllObservable = clicks(findViewById(R.id.btnRefresh))
-                .flatMap(clickToResponse);  //slide difference map vs flatmap
-
+        //slide difference map vs flatmap
         clicks(view(R.id.close1))
-                .flatMap(clickToResponse)
-                .map(randomUser)
-                .subscribe(firstUserObserver);
+                .flatMap(getResponse())
+                .map(this::getRandomUser)
+                .subscribe(this::updateFirstUser);
 
         clicks(view(R.id.close2))
-                .flatMap(clickToResponse)
-                .map(randomUser)
-                .subscribe(secondUserObserver);
+                .flatMap(getResponse())
+                .map(this::getRandomUser)
+                .subscribe(this::updateSecondUser);
 
         clicks(view(R.id.close3))
-                .flatMap(clickToResponse)
-                .map(randomUser)
-                .subscribe(thirdUserObserver);
+                .flatMap(getResponse())
+                .map(this::getRandomUser)
+                .subscribe(this::updateThirdUser);
     }
 
     private void subscribeWithAllObservers(Observable<ArrayList<User>> observable) {
         ConnectableObservable<ArrayList<User>> connectableObservable = observable.publish();
         //Slide on doOnNext, onError etc.
-        connectableObservable.doOnError(new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
-                //lets handle all errors the same way by displaying some message
-            }
-        });
+        setupErrorHandling(connectableObservable);
 
         //get a single random user from the response and then have each of
         //the three screen elements subscribe to it thus updating the screens with new data
-        connectableObservable.map(randomUser).subscribe(firstUserObserver);
-        connectableObservable.map(randomUser).subscribe(secondUserObserver);
-        connectableObservable.map(randomUser).subscribe(thirdUserObserver);
+        connectableObservable.map(this::getRandomUser).subscribe(this::updateFirstUser);
+        connectableObservable.map(this::getRandomUser).subscribe(this::updateSecondUser);
+        connectableObservable.map(this::getRandomUser).subscribe(this::updateThirdUser);
         connectableObservable.connect();
     }
 
-    private void createObservers() {
+    private Observable<ArrayList<User>> getUserObservable() {
+        //slide on creating observables, then show how retrofit can do it for you
+        return api.users().cache()  //slides on cache and other aggregates
+                .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
+                .subscribeOn(Schedulers.io());  //metion immutibility
+    }
 
+    private Func1<OnClickEvent, Observable<ArrayList<User>>> getResponse() {
+        //slide on functions, mapping specifically
+        return onClickEvent -> getUserObservable();
+    }
 
-        firstUserObserver = new Observer<User>() {
-           //slide
-            @Override
-            public void onCompleted() {
+    private Observable<ArrayList<User>> getRefreshObservable() {
+        return clicks(findViewById(R.id.btnRefresh))
+                .flatMap(getResponse());
+    }
 
-            }
-            //slide
-            @Override
-            public void onError(Throwable e) {
+    private User getRandomUser(ArrayList<User> users) {
+        return users.get(getRandomIndex(users.size()));
+    }
 
-            }
-            //slide
-            @Override
-            public void onNext(User user) {
-                ((TextView) view(R.id.name1)).setText(user.login);
-                Picasso.with(context)
-                        .load(user.avatar_url)
-                        .into((ImageView) view(R.id.avatar1));
+    private Observable<ArrayList<User>> setupErrorHandling(ConnectableObservable<ArrayList<User>> connectableObservable) {
+        return connectableObservable.doOnError(throwable -> {
+            //lets handle all errors the same way by displaying some message
+        });
+    }
 
-            }
-        };
+    private void updateThirdUser(User user) {
+        bindData(R.id.name3, R.id.avatar3, user);
+    }
 
-        secondUserObserver = new Observer<User>() {
-            @Override
-            public void onCompleted() {
+    private void updateSecondUser(User user) {
+        bindData(R.id.name2, R.id.avatar2, user);
+    }
 
-            }
+    private void updateFirstUser(User user) {
+        bindData(R.id.name1, R.id.avatar1, user);
+    }
 
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(User user) {
-                ((TextView) view(R.id.name2)).setText(user.login);
-                Picasso.with(context)
-                        .load(user.avatar_url)
-                        .into((ImageView) view(R.id.avatar2));
-            }
-        };
-
-        thirdUserObserver = new Observer<User>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(User user) {
-                ((TextView) view(R.id.name3)).setText(user.login);
-                Picasso.with(context)
-                        .load(user.avatar_url)
-                        .into((ImageView) view(R.id.avatar3));
-            }
-        };
+    private void bindData(int textviewID, int imageViewId, User user) {
+        ((TextView) view(textviewID)).setText(user.login);
+        Picasso.with(context).load(user.avatar_url).into((ImageView) view(imageViewId));
     }
 
     public static int getRandomIndex(int size) {
