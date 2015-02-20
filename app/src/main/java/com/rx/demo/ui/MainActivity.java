@@ -38,13 +38,11 @@ public class MainActivity extends DemoBaseActivity {
         super.onCreate(savedInstanceState);
 
         //Slides on consuming observables, actions and observers
-        getResponse();
-
         setupClickStreams();
 
-        subscribeWithAllObservers(getRefreshObservable());
+        subscribeTo(getRefreshObservable());
 
-        subscribeWithAllObservers(getUsersObservable());
+        subscribeTo(getUsersObservable());
     }
 
     private void setupClickStreams() {
@@ -53,26 +51,35 @@ public class MainActivity extends DemoBaseActivity {
         clicks(view(R.id.close1))
                 .flatMap(getResponse())
                 .map(this::getRandomUser)
+                .retry(1)
+                .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateFirstUser);
 
         clicks(view(R.id.close2))
                 .flatMap(getResponse())
                 .map(this::getRandomUser)
-                .subscribe(this::updateSecondUser);
+                .retry(1)
+                .subscribe(this::updateSecondUser, throwable -> {
+                    //do something
+                });
 
         clicks(view(R.id.close3))
                 .flatMap(getResponse())
                 .map(this::getRandomUser)
+                .retry(1)
+                .doOnError(throwable -> {
+                    //do something
+                })
                 .subscribe(this::updateThirdUser);
     }
 
-    private void subscribeWithAllObservers(Observable<ArrayList<User>> observable) {
+    private void subscribeTo(Observable<ArrayList<User>> observable) {
 
         //Slide on doOnNext, onError etc.
         setupErrorHandling(observable);
 
         //get a single random user from the response and then have each of
-        //the three screen elements subscribe to it thus updating the screens with new data
+        //the three screen elements subscribeTo to it thus updating the screens with new data
         observable.map(this::getRandomUser).subscribe(this::updateFirstUser);
         observable.map(this::getRandomUser).subscribe(this::updateSecondUser);
         observable.map(this::getRandomUser).subscribe(this::updateThirdUser);
@@ -80,7 +87,8 @@ public class MainActivity extends DemoBaseActivity {
 
     private Observable<ArrayList<User>> getUsersObservable() {
         //slide on creating observables, then show how retrofit can do it for you
-        return api.users().cache()  //slides on cache and other aggregates
+        return api.users()
+                .cache()  //slides on cache/blocking/publish and other aggregates
                 .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
                 .subscribeOn(Schedulers.io());  //metion immutibility
     }
@@ -99,8 +107,8 @@ public class MainActivity extends DemoBaseActivity {
         return users.get(getRandomIndex(users.size()));
     }
 
-    private Observable<ArrayList<User>> setupErrorHandling(Observable<ArrayList<User>> connectableObservable) {
-        return connectableObservable.doOnError(throwable -> {
+    private Observable<ArrayList<User>> setupErrorHandling(Observable<ArrayList<User>> observable) {
+        return observable.doOnError(throwable -> {
             //lets handle all errors the same way by displaying some message
         });
     }
