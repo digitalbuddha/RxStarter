@@ -62,7 +62,7 @@ public class MainActivity extends DemoBaseActivity {
 
 
     private void setupObservables() {
-        usersObservable = api.users()
+        usersObservable = api.users().cache()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
