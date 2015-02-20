@@ -22,6 +22,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.android.events.OnClickEvent;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
@@ -51,7 +52,7 @@ public class MainActivity extends DemoBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.suggestions_layout);
         ButterKnife.inject(this);
-
+        //Slides on consuming observables
         createObservers();
 
         createUserObservable();
@@ -66,21 +67,24 @@ public class MainActivity extends DemoBaseActivity {
     }
 
     private void createUserObservable() {
-        usersObservable = api.users().cache()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
+        //slide on creating observables, then show how retrofit can do it for you
+        usersObservable = api.users().cache()  //slides on cache and other aggregates
+                .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
+                .subscribeOn(Schedulers.io());  //metion immutibility
     }
 
 
     private void setupFunctions() {
+        //slide on functions, mapping specifically
         clickToResponse = onClickEvent -> usersObservable;
         randomUser = users -> users.get(getRandomIndex(users.size()));
     }
 
 
     private void setupClickStreams() {
+        //slide everything is a stream including click events show double click buffering as well
         refreshAllObservable = clicks(findViewById(R.id.btnRefresh))
-                .flatMap(clickToResponse);
+                .flatMap(clickToResponse);  //slide difference map vs flatmap
 
         clicks(view(R.id.close1))
                 .flatMap(clickToResponse)
@@ -100,6 +104,14 @@ public class MainActivity extends DemoBaseActivity {
 
     private void subscribeWithAllObservers(Observable<ArrayList<User>> observable) {
         ConnectableObservable<ArrayList<User>> connectableObservable = observable.publish();
+        //Slide on doOnNext, onError etc.
+        connectableObservable.doOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                //lets handle all errors the same way by displaying some message
+            }
+        });
+
         //get a single random user from the response and then have each of
         //the three screen elements subscribe to it thus updating the screens with new data
         connectableObservable.map(randomUser).subscribe(firstUserObserver);
@@ -112,16 +124,17 @@ public class MainActivity extends DemoBaseActivity {
 
 
         firstUserObserver = new Observer<User>() {
+           //slide
             @Override
             public void onCompleted() {
 
             }
-
+            //slide
             @Override
             public void onError(Throwable e) {
 
             }
-
+            //slide
             @Override
             public void onNext(User user) {
                 ((TextView) view(R.id.name1)).setText(user.login);
