@@ -44,7 +44,7 @@ public class MainActivity extends DemoBaseActivity {
 
         subscribeWithAllObservers(getRefreshObservable());
 
-        subscribeWithAllObservers(getUserObservable());
+        subscribeWithAllObservers(getUsersObservable());
     }
 
     private void setupClickStreams() {
@@ -78,7 +78,7 @@ public class MainActivity extends DemoBaseActivity {
         observable.map(this::getRandomUser).subscribe(this::updateThirdUser);
     }
 
-    private Observable<ArrayList<User>> getUserObservable() {
+    private Observable<ArrayList<User>> getUsersObservable() {
         //slide on creating observables, then show how retrofit can do it for you
         return api.users().cache()  //slides on cache and other aggregates
                 .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
@@ -87,7 +87,7 @@ public class MainActivity extends DemoBaseActivity {
 
     private Func1<OnClickEvent, Observable<ArrayList<User>>> getResponse() {
         //slide on functions, mapping specifically
-        return onClickEvent -> getUserObservable();
+        return onClickEvent -> getUsersObservable();
     }
 
     private Observable<ArrayList<User>> getRefreshObservable() {
