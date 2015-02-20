@@ -51,11 +51,15 @@ public class MainActivity extends DemoBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.suggestions_layout);
         ButterKnife.inject(this);
-
+        //first we set up observers for each user we want to display,
+        //this is where view binding is done
         initObservers();
+        //next we setup the refresh observable and the response observable that it is based on
         setupObservables();
+        //we subscribe with the observers to both the refresh button and the initial load
         subscribeWithAllObservers(refreshAllObservable);
         subscribeWithAllObservers(usersObservable);
+        //finally we set up subscriptions for the cancel buttons
         setupCloseClicks();
     }
 
