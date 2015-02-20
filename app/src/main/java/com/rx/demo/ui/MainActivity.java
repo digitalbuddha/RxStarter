@@ -49,8 +49,7 @@ public class MainActivity extends DemoBaseActivity {
         //slide everything is a stream including click events show double click buffering as well
         //slide difference map vs flatmap
         clicks(view(R.id.close1))
-                .flatMap(getResponse())
-                .map(this::getRandomUser)
+                .flatMap(onClickEvent -> getSingleUser())
                 .retry(1)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateFirstUser);
@@ -91,6 +90,15 @@ public class MainActivity extends DemoBaseActivity {
                 .cache()  //slides on cache/blocking/publish and other aggregates
                 .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
                 .subscribeOn(Schedulers.io());  //metion immutibility
+    }
+
+    private Observable<User> getSingleUser()
+    {
+        return getUsersObservable()
+                .flatMap(Observable::from)
+                .toSortedList((user, user2) -> new Random().nextBoolean() ? 1 : -1)
+                .flatMap(Observable::from)
+                .first();
     }
 
     private Func1<OnClickEvent, Observable<ArrayList<User>>> getResponse() {
