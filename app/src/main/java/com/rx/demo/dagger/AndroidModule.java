@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger.dagger;
+package com.rx.demo.dagger;
 
 import android.content.Context;
 
-import com.rx.demo.dagger.rest.Github;
+import com.rx.demo.rest.Github;
 
 import javax.inject.Singleton;
 

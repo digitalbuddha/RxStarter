@@ -13,36 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger.dagger;
+package com.rx.demo.dagger;
 
-import android.content.Context;
+import android.app.Application;
 
-import com.rx.demo.dagger.ui.MainActivity;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.inject.Singleton;
+import dagger.ObjectGraph;
+import groovy.transform.CompileStatic;
 
-import dagger.Module;
-import dagger.Provides;
-
-@Module(
-        injects = {
-                MainActivity.class
-        },
-        addsTo = AndroidModule.class,
-        library = true
-)
-public class ActivityModule {
-    private final DemoBaseActivity activity;
-
-    public ActivityModule(DemoBaseActivity activity) {
-        this.activity = activity;
+@CompileStatic
+public class DemoApplication extends Application {
+    public ObjectGraph getApplicationGraph() {
+        return applicationGraph;
     }
 
-    @Provides
-    @Singleton
-    @Activity
-    Context provideActivityContext() {
-        return activity;
+
+    ObjectGraph applicationGraph;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        applicationGraph = ObjectGraph.create(getModules().toArray());
     }
 
+    protected List<Object> getModules() {
+        return Arrays.<Object>asList(new AndroidModule(this));
+    }
 }

@@ -20,11 +20,11 @@
         android:maxSdkVersion="18" />
 
     <application
-        android:name="com.rx.demo.dagger.dagger.DemoApplication"
+        android:name="com.rx.demo.dagger.DemoApplication"
         android:label="@string/app_name" >
 
         <activity
-            android:name="com.rx.demo.dagger.ui.MainActivity"
+            android:name="com.rx.demo.ui.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

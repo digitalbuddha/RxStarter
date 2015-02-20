@@ -13,14 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger.dagger;
+package com.rx.demo.dagger;
 
-import java.lang.annotation.Retention;
+import android.content.Context;
 
-import javax.inject.Qualifier;
+import com.rx.demo.ui.MainActivity;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Singleton;
 
-@Qualifier @Retention(RUNTIME)
-public @interface ForApplication {
+import dagger.Module;
+import dagger.Provides;
+
+@Module(
+        injects = {
+                MainActivity.class
+        },
+        addsTo = AndroidModule.class,
+        library = true
+)
+public class ActivityModule {
+    private final DemoBaseActivity activity;
+
+    public ActivityModule(DemoBaseActivity activity) {
+        this.activity = activity;
+    }
+
+    @Provides
+    @Singleton
+    @Activity
+    Context provideActivityContext() {
+        return activity;
+    }
+
 }
