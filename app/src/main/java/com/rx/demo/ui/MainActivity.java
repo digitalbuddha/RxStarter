@@ -21,7 +21,6 @@ import rx.Observable;
 import rx.android.events.OnClickEvent;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
-import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
 import static rx.android.observables.ViewObservable.clicks;
@@ -68,16 +67,15 @@ public class MainActivity extends DemoBaseActivity {
     }
 
     private void subscribeWithAllObservers(Observable<ArrayList<User>> observable) {
-        ConnectableObservable<ArrayList<User>> connectableObservable = observable.publish();
+
         //Slide on doOnNext, onError etc.
-        setupErrorHandling(connectableObservable);
+        setupErrorHandling(observable);
 
         //get a single random user from the response and then have each of
         //the three screen elements subscribe to it thus updating the screens with new data
-        connectableObservable.map(this::getRandomUser).subscribe(this::updateFirstUser);
-        connectableObservable.map(this::getRandomUser).subscribe(this::updateSecondUser);
-        connectableObservable.map(this::getRandomUser).subscribe(this::updateThirdUser);
-        connectableObservable.connect();
+        observable.map(this::getRandomUser).subscribe(this::updateFirstUser);
+        observable.map(this::getRandomUser).subscribe(this::updateSecondUser);
+        observable.map(this::getRandomUser).subscribe(this::updateThirdUser);
     }
 
     private Observable<ArrayList<User>> getUserObservable() {
@@ -101,7 +99,7 @@ public class MainActivity extends DemoBaseActivity {
         return users.get(getRandomIndex(users.size()));
     }
 
-    private Observable<ArrayList<User>> setupErrorHandling(ConnectableObservable<ArrayList<User>> connectableObservable) {
+    private Observable<ArrayList<User>> setupErrorHandling(Observable<ArrayList<User>> connectableObservable) {
         return connectableObservable.doOnError(throwable -> {
             //lets handle all errors the same way by displaying some message
         });
