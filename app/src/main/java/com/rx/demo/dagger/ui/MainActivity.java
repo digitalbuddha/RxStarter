@@ -38,9 +38,9 @@ public class MainActivity extends DemoBaseActivity {
     @Inject
     Context context;
 
-    private Observer<User> reloadFirstUserObserver;
-    private Observer<User> reloadSecondUserObserver;
-    private Observer<User> reloadThirdUserObserver;
+    private Observer<User> firstUserObserver;
+    private Observer<User> secondUserObserver;
+    private Observer<User> thirdUserObserver;
     private Func1<OnClickEvent, Observable<ArrayList<User>>> clickToResponse;
     private Observable<ArrayList<User>> refreshAllObservable;
     private Observable<ArrayList<User>> usersObservable;
@@ -85,31 +85,31 @@ public class MainActivity extends DemoBaseActivity {
         clicks(view(R.id.close1))
                 .flatMap(clickToResponse)
                 .map(new MapToSingleUser())
-                .subscribe(reloadFirstUserObserver);
+                .subscribe(firstUserObserver);
 
         clicks(view(R.id.close2))
                 .flatMap(clickToResponse)
                 .map(new MapToSingleUser())
-                .subscribe(reloadSecondUserObserver);
+                .subscribe(secondUserObserver);
 
         clicks(view(R.id.close3))
                 .flatMap(clickToResponse)
                 .map(new MapToSingleUser())
-                .subscribe(reloadThirdUserObserver);
+                .subscribe(thirdUserObserver);
     }
 
     private void subscribeWithAllObservers(Observable<ArrayList<User>> observable) {
         ConnectableObservable<ArrayList<User>> connectableObservable = observable.publish();
         //get a single random user from the response and then have each of
         //the three screen elements subscribe to it thus updating the screens with new data
-        connectableObservable.map(new MapToSingleUser()).subscribe(reloadFirstUserObserver);
-        connectableObservable.map(new MapToSingleUser()).subscribe(reloadSecondUserObserver);
-        connectableObservable.map(new MapToSingleUser()).subscribe(reloadThirdUserObserver);
+        connectableObservable.map(new MapToSingleUser()).subscribe(firstUserObserver);
+        connectableObservable.map(new MapToSingleUser()).subscribe(secondUserObserver);
+        connectableObservable.map(new MapToSingleUser()).subscribe(thirdUserObserver);
         connectableObservable.connect();
     }
 
     private void initObservers() {
-        reloadFirstUserObserver = new Observer<User>() {
+        firstUserObserver = new Observer<User>() {
             @Override
             public void onCompleted() {
 
@@ -130,7 +130,7 @@ public class MainActivity extends DemoBaseActivity {
             }
         };
 
-        reloadSecondUserObserver = new Observer<User>() {
+        secondUserObserver = new Observer<User>() {
             @Override
             public void onCompleted() {
 
@@ -150,7 +150,7 @@ public class MainActivity extends DemoBaseActivity {
             }
         };
 
-        reloadThirdUserObserver = new Observer<User>() {
+        thirdUserObserver = new Observer<User>() {
             @Override
             public void onCompleted() {
 
