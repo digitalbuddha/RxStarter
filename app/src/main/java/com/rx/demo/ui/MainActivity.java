@@ -13,14 +13,14 @@ import com.rx.demo.rest.Github;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.events.OnClickEvent;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static rx.android.observables.ViewObservable.clicks;
@@ -33,92 +33,70 @@ public class MainActivity extends DemoBaseActivity {
     @Inject
     Context context;
 
+    private Observable<ArrayList<User>> userObservable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //as soon as screen loads, we would like to load a random user into each user box
+        randomUser().subscribe(this::updateFirstUser);
+        randomUser().subscribe(this::updateSecondUser);
+        randomUser().subscribe(this::updateThirdUser);
 
-        //Slides on consuming observables, actions and observers
-        setupClickStreams();
-
-        subscribeTo(getRefreshObservable());
-
-        subscribeTo(getUsersObservable());
-    }
-
-    private void setupClickStreams() {
-        //slide everything is a stream including click events show double click buffering as well
-        //slide difference map vs flatmap
+        //next we want to set up reload of each use when the corresponding X is clicked
         clicks(view(R.id.close1))
-                .flatMap(onClickEvent -> getSingleUser())
+                .debounce(2, TimeUnit.SECONDS)
+                .flatMap(onClickEvent -> randomUser())
                 .retry(1)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateFirstUser);
 
         clicks(view(R.id.close2))
-                .flatMap(getResponse())
-                .map(this::getRandomUser)
-                .retry(1)
-                .subscribe(this::updateSecondUser, throwable -> {
-                    //do something
-                });
+                .debounce(2, TimeUnit.SECONDS)
+                .flatMap(onClickEvent -> randomUser())
+                .onErrorReturn(throwable -> new User())
+                .subscribe(this::updateSecondUser);
 
         clicks(view(R.id.close3))
-                .flatMap(getResponse())
-                .map(this::getRandomUser)
-                .retry(1)
+                .flatMap(onClickEvent -> getUsersObservable())
+                        //slide on map
+                .flatMap(onClickEvent -> randomUser())
                 .doOnError(throwable -> {
                     //do something
                 })
                 .subscribe(this::updateThirdUser);
+
+        Observable<OnClickEvent> refreshClick = clicks(findViewById(R.id.btnRefresh));
+        refreshClick.flatMap(onClickEvent -> randomUser()).subscribe(this::updateFirstUser);
+        refreshClick.flatMap(onClickEvent -> randomUser()).subscribe(this::updateSecondUser);
+        refreshClick.flatMap(onClickEvent -> randomUser()).subscribe(this::updateThirdUser);
     }
 
-    private void subscribeTo(Observable<ArrayList<User>> observable) {
 
-        //Slide on doOnNext, onError etc.
-        setupErrorHandling(observable);
 
-        //get a single random user from the response and then have each of
-        //the three screen elements subscribeTo to it thus updating the screens with new data
-        observable.map(this::getRandomUser).subscribe(this::updateFirstUser);
-        observable.map(this::getRandomUser).subscribe(this::updateSecondUser);
-        observable.map(this::getRandomUser).subscribe(this::updateThirdUser);
-    }
+
+
+
 
     private Observable<ArrayList<User>> getUsersObservable() {
         //slide on creating observables, then show how retrofit can do it for you
-        return api.users()
-                .cache()  //slides on cache/blocking/publish and other aggregates
-                .observeOn(AndroidSchedulers.mainThread())  //slide on schedulers/threading
-                .subscribeOn(Schedulers.io());  //metion immutibility
+        if (userObservable==null) {
+            userObservable = api.users()
+                    .cache()  //slides on cache and blocking
+                    .observeOn(AndroidSchedulers.mainThread())//slide on schedulers/threading
+                    .subscribeOn(Schedulers.io());
+        }
+        return userObservable;
     }
 
-    private Observable<User> getSingleUser()
-    {
+    private Observable<User> randomUser() {
         return getUsersObservable()
-                .flatMap(Observable::from)
-                .toSortedList((user, user2) -> new Random().nextBoolean() ? 1 : -1)
-                .flatMap(Observable::from)
-                .first();
-    }
+                //slide on Observable.from
+                .map(users -> {
+                    Collections.shuffle(users);
+                    return users.get(0);
+                });
 
-    private Func1<OnClickEvent, Observable<ArrayList<User>>> getResponse() {
-        //slide on functions, mapping specifically
-        return onClickEvent -> getUsersObservable();
-    }
-
-    private Observable<ArrayList<User>> getRefreshObservable() {
-        return clicks(findViewById(R.id.btnRefresh))
-                .flatMap(getResponse());
-    }
-
-    private User getRandomUser(ArrayList<User> users) {
-        return users.get(getRandomIndex(users.size()));
-    }
-
-    private Observable<ArrayList<User>> setupErrorHandling(Observable<ArrayList<User>> observable) {
-        return observable.doOnError(throwable -> {
-            //lets handle all errors the same way by displaying some message
-        });
     }
 
     private void updateThirdUser(User user) {
@@ -136,9 +114,5 @@ public class MainActivity extends DemoBaseActivity {
     private void bindData(int textviewID, int imageViewId, User user) {
         ((TextView) view(textviewID)).setText(user.login);
         Picasso.with(context).load(user.avatar_url).into((ImageView) view(imageViewId));
-    }
-
-    public static int getRandomIndex(int size) {
-        return new Random().nextInt(size);
     }
 }
