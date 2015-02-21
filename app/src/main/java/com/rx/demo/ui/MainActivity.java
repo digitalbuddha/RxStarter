@@ -56,23 +56,20 @@ public class MainActivity extends DemoBaseActivity {
         randomUserObservable.subscribe(this::updateSecondUser);
         randomUserObservable.subscribe(this::updateThirdUser);
 
-        //next we want to set up reload of each use when the corresponding X is clicked
         clicks(view(R.id.close1))
-                .debounce(2, TimeUnit.SECONDS)
+                .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> randomUserObservable)
-                .retry(1)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateFirstUser);
 
         clicks(view(R.id.close2))
-                .debounce(2, TimeUnit.SECONDS)
+                .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> randomUserObservable)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateSecondUser);
 
         clicks(view(R.id.close3))
-                .flatMap(onClickEvent -> randomUserObservable)
-                        //slide on map
+                .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> randomUserObservable)
                 .doOnError(throwable -> {
                     //do something
