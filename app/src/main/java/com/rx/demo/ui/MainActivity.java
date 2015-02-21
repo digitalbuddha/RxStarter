@@ -35,69 +35,56 @@ public class MainActivity extends DemoBaseActivity {
 
     private Observable<ArrayList<User>> userObservable;
 
+    private Observable<User> randomUserObservable;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //as soon as screen loads, we would like to load a random user into each user box
-        randomUser().subscribe(this::updateFirstUser);
-        randomUser().subscribe(this::updateSecondUser);
-        randomUser().subscribe(this::updateThirdUser);
+
+        userObservable = api.users()
+                .cache()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+
+        randomUserObservable = userObservable.map(users -> {
+            Collections.shuffle(users);
+            return users.get(0);
+        });
+
+        randomUserObservable.subscribe(this::updateFirstUser);
+        randomUserObservable.subscribe(this::updateSecondUser);
+        randomUserObservable.subscribe(this::updateThirdUser);
 
         //next we want to set up reload of each use when the corresponding X is clicked
         clicks(view(R.id.close1))
                 .debounce(2, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> randomUser())
+                .flatMap(onClickEvent -> randomUserObservable)
                 .retry(1)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateFirstUser);
 
         clicks(view(R.id.close2))
                 .debounce(2, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> randomUser())
+                .flatMap(onClickEvent -> randomUserObservable)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateSecondUser);
 
         clicks(view(R.id.close3))
-                .flatMap(onClickEvent -> getUsersObservable())
+                .flatMap(onClickEvent -> randomUserObservable)
                         //slide on map
-                .flatMap(onClickEvent -> randomUser())
+                .flatMap(onClickEvent -> randomUserObservable)
                 .doOnError(throwable -> {
                     //do something
                 })
                 .subscribe(this::updateThirdUser);
 
         Observable<OnClickEvent> refreshClick = clicks(findViewById(R.id.btnRefresh));
-        refreshClick.flatMap(onClickEvent -> randomUser()).subscribe(this::updateFirstUser);
-        refreshClick.flatMap(onClickEvent -> randomUser()).subscribe(this::updateSecondUser);
-        refreshClick.flatMap(onClickEvent -> randomUser()).subscribe(this::updateThirdUser);
+        refreshClick.flatMap(onClickEvent -> randomUserObservable).subscribe(this::updateFirstUser);
+        refreshClick.flatMap(onClickEvent -> randomUserObservable).subscribe(this::updateSecondUser);
+        refreshClick.flatMap(onClickEvent -> randomUserObservable).subscribe(this::updateThirdUser);
     }
 
-
-
-
-
-
-
-    private Observable<ArrayList<User>> getUsersObservable() {
-        //slide on creating observables, then show how retrofit can do it for you
-        if (userObservable==null) {
-            userObservable = api.users()
-                    .cache()  //slides on cache and blocking
-                    .observeOn(AndroidSchedulers.mainThread())//slide on schedulers/threading
-                    .subscribeOn(Schedulers.io());
-        }
-        return userObservable;
-    }
-
-    private Observable<User> randomUser() {
-        return getUsersObservable()
-                //slide on Observable.from
-                .map(users -> {
-                    Collections.shuffle(users);
-                    return users.get(0);
-                });
-
-    }
 
     private void updateThirdUser(User user) {
         bindData(R.id.name3, R.id.avatar3, user);
