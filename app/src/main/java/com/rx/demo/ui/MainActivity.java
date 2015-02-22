@@ -14,6 +14,7 @@ import com.rx.demo.rest.Github;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +23,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.observables.ViewObservable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 
@@ -36,53 +36,34 @@ public class MainActivity extends DemoBaseActivity {
 
     private Observable<User> nextUserObservable;
     private List<ViewModel> viewIds;
+    private Observable<ArrayList<User>> usersObservable;
+    private Observable<User> nextThreeObservable;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initViewIds();
 
+        createObservables();
 
-        viewIds = new ArrayList<>();
-        viewIds.add(new ViewModel(R.id.name1, R.id.avatar1));
-        viewIds.add(new ViewModel(R.id.name2, R.id.avatar2));
-        viewIds.add(new ViewModel(R.id.name3, R.id.avatar3));
-
-        Action1<List<User>> updateAll = users -> {
-            updateFirstUser(users.get(index++));
-            updateSecondUser(users.get(index++));
-            updateThirdUser(users.get(index++));
-        };
-
-        Observable<ArrayList<User>> usersObservable = api.users()
-                .cache()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-
-        usersObservable
-                .flatMap(Observable::from)
-                .take(3)
-                .subscribe(this::updateUser);
-
-        nextUserObservable = usersObservable
-                .map(users -> users.get(index++));
-
+        nextThreeObservable.subscribe(this::updateUser);
 
         ViewObservable.clicks(findViewById(R.id.btnRefresh))
-                .flatMap(onClickEvent -> usersObservable)
-                .subscribe(updateAll);
+                .flatMap(onClickEvent -> nextThreeObservable)
+                .subscribe(this::updateUser);
 
         ViewObservable.clicks(view(R.id.close1))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUserObservable)
                 .onErrorReturn(throwable -> new User())
-                .subscribe(this::updateFirstUser);
+                .subscribe(user -> updateUserAtPosition(user, 0));
 
         ViewObservable.clicks(view(R.id.close2))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUserObservable)
                 .onErrorReturn(throwable -> new User())
-                .subscribe(this::updateSecondUser);
+                .subscribe(user -> updateUserAtPosition(user, 1));
 
         ViewObservable.clicks(view(R.id.close3))
                 .debounce(1, TimeUnit.SECONDS)
@@ -90,27 +71,42 @@ public class MainActivity extends DemoBaseActivity {
                 .doOnError(throwable -> {
                     //do something
                 })
-                .subscribe(this::updateThirdUser);
+                .subscribe(user -> updateUserAtPosition(user, 2));
+    }
+
+    private void createObservables() {
+        usersObservable = api.users()
+                .cache()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+
+        nextUserObservable = usersObservable
+                .map(users -> users.get(index++));
+
+        nextThreeObservable = usersObservable
+                .map(users -> new ArrayList<>(Arrays.asList(
+                        users.get(index),
+                        users.get(index + 1),
+                        users.get(index + 2))))
+                .flatMap(Observable::from);
+    }
+
+    private void initViewIds() {
+        viewIds = new ArrayList<>();
+        viewIds.add(new ViewModel(R.id.name1, R.id.avatar1));
+        viewIds.add(new ViewModel(R.id.name2, R.id.avatar2));
+        viewIds.add(new ViewModel(R.id.name3, R.id.avatar3));
     }
 
     private void updateUser( User user) {
         int viewToChange = index % 3;
-        ViewModel viewModel = viewIds.get(viewToChange);
-        bindData(viewModel.getNameId(),viewModel.getAvatarID(),user);
+        updateUserAtPosition(user, viewToChange);
         index++;
     }
 
-
-    private void updateThirdUser(User user) {
-        bindData(R.id.name3, R.id.avatar3, user);
-    }
-
-    private void updateSecondUser(User user) {
-        bindData(R.id.name2, R.id.avatar2, user);
-    }
-
-    private void updateFirstUser(User user) {
-        bindData(R.id.name1, R.id.avatar1, user);
+    private void updateUserAtPosition(User user, int viewToChange) {
+        ViewModel viewModel = viewIds.get(viewToChange);
+        bindData(viewModel.getNameId(),viewModel.getAvatarID(),user);
     }
 
     private void bindData(int textviewID, int imageViewId, User user) {
