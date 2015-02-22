@@ -9,6 +9,7 @@ import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.dagger.Activity;
 import com.rx.demo.dagger.DemoBaseActivity;
 import com.rx.demo.model.User;
+import com.rx.demo.model.ViewModel;
 import com.rx.demo.rest.Github;
 import com.squareup.picasso.Picasso;
 
@@ -34,11 +35,19 @@ public class MainActivity extends DemoBaseActivity {
     int index;
 
     private Observable<User> nextUserObservable;
+    private List<ViewModel> viewIds;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        viewIds = new ArrayList<>();
+        viewIds.add(new ViewModel(R.id.name1, R.id.avatar1));
+        viewIds.add(new ViewModel(R.id.name2, R.id.avatar2));
+        viewIds.add(new ViewModel(R.id.name3, R.id.avatar3));
+
         Action1<List<User>> updateAll = users -> {
             updateFirstUser(users.get(index++));
             updateSecondUser(users.get(index++));
@@ -50,11 +59,14 @@ public class MainActivity extends DemoBaseActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
+        usersObservable
+                .flatMap(Observable::from)
+                .take(3)
+                .subscribe(this::updateUser);
+
         nextUserObservable = usersObservable
                 .map(users -> users.get(index++));
 
-        usersObservable
-                .subscribe(updateAll);
 
         ViewObservable.clicks(findViewById(R.id.btnRefresh))
                 .flatMap(onClickEvent -> usersObservable)
@@ -79,6 +91,13 @@ public class MainActivity extends DemoBaseActivity {
                     //do something
                 })
                 .subscribe(this::updateThirdUser);
+    }
+
+    private void updateUser( User user) {
+        int viewToChange = index % 3;
+        ViewModel viewModel = viewIds.get(viewToChange);
+        bindData(viewModel.getNameId(),viewModel.getAvatarID(),user);
+        index++;
     }
 
 
