@@ -1,12 +1,10 @@
 package com.rx.demo.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
-import com.rx.demo.dagger.Activity;
 import com.rx.demo.dagger.DemoBaseActivity;
 import com.rx.demo.model.User;
 import com.rx.demo.model.ViewModel;
@@ -28,10 +26,8 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends DemoBaseActivity {
     @Inject
     public Github api;
-    @Activity
-    @Inject
-    Context context;
-    int index;
+
+    private int index;
 
     private Observable<User> nextUser;
     private List<ViewModel> viewIds;

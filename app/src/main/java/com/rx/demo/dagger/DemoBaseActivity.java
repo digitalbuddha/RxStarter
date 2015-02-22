@@ -15,6 +15,7 @@
  */
 package com.rx.demo.dagger;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import dagger.ObjectGraph;
 import groovy.transform.CompileStatic;
 
@@ -34,7 +37,9 @@ import groovy.transform.CompileStatic;
 @CompileStatic
 public abstract class DemoBaseActivity extends FragmentActivity {
     ObjectGraph activityGraph;
-
+    @Activity
+    @Inject
+    protected Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
