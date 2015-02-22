@@ -12,17 +12,17 @@ import com.rx.demo.model.User;
 import com.rx.demo.rest.Github;
 import com.squareup.picasso.Picasso;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.android.events.OnClickEvent;
+import rx.android.observables.ViewObservable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static rx.android.observables.ViewObservable.clicks;
 
 
 public class MainActivity extends DemoBaseActivity {
@@ -31,54 +31,54 @@ public class MainActivity extends DemoBaseActivity {
     @Activity
     @Inject
     Context context;
+    int index;
 
-
-    private Observable<User> randomUserObservable;
+    private Observable<User> nextUserObservable;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Action1<List<User>> updateAll = users -> {
+            updateFirstUser(users.get(index++));
+            updateSecondUser(users.get(index++));
+            updateThirdUser(users.get(index++));
+        };
 
-        randomUserObservable = api.users()
+        Observable<ArrayList<User>> usersObservable = api.users()
                 .cache()
-                .map(users -> {
-                    Collections.shuffle(users);
-
-                    return users.get(0);
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
-        //initial load of 3  random users
-        randomUserObservable.subscribe(this::updateFirstUser);
-        randomUserObservable.subscribe(this::updateSecondUser);
-        randomUserObservable.subscribe(this::updateThirdUser);
 
-        clicks(view(R.id.close1))
+        nextUserObservable = usersObservable
+                .map(users -> users.get(index++));
+
+        usersObservable
+                .subscribe(updateAll);
+
+        ViewObservable.clicks(findViewById(R.id.btnRefresh))
+                .flatMap(onClickEvent -> usersObservable)
+                .subscribe(updateAll);
+
+        ViewObservable.clicks(view(R.id.close1))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> randomUserObservable)
+                .flatMap(onClickEvent -> nextUserObservable)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateFirstUser);
 
-        clicks(view(R.id.close2))
+        ViewObservable.clicks(view(R.id.close2))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> randomUserObservable)
+                .flatMap(onClickEvent -> nextUserObservable)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateSecondUser);
 
-        clicks(view(R.id.close3))
+        ViewObservable.clicks(view(R.id.close3))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> randomUserObservable)
+                .flatMap(onClickEvent -> nextUserObservable)
                 .doOnError(throwable -> {
                     //do something
                 })
                 .subscribe(this::updateThirdUser);
-
-        Observable<OnClickEvent> refreshClick = clicks(findViewById(R.id.btnRefresh));
-        Observable<User> userObservable = refreshClick.flatMap(onClickEvent -> randomUserObservable);
-        userObservable.subscribe(this::updateFirstUser);
-        userObservable.subscribe(this::updateSecondUser);
-        userObservable.subscribe(this::updateThirdUser);
     }
 
 
