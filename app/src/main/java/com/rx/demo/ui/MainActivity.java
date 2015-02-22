@@ -12,7 +12,6 @@ import com.rx.demo.model.User;
 import com.rx.demo.rest.Github;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +32,6 @@ public class MainActivity extends DemoBaseActivity {
     @Inject
     Context context;
 
-    private Observable<ArrayList<User>> userObservable;
 
     private Observable<User> randomUserObservable;
 
@@ -42,16 +40,17 @@ public class MainActivity extends DemoBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        userObservable = api.users()
+        randomUserObservable = api.users()
                 .cache()
+                .map(users -> {
+                    Collections.shuffle(users);
+
+                    return users.get(0);
+                })
+                .filter(user -> !user.login.contains("steve"))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
-
-        randomUserObservable = userObservable.map(users -> {
-            Collections.shuffle(users);
-            return users.get(0);
-        });
-
+        //initial load of 3  random users
         randomUserObservable.subscribe(this::updateFirstUser);
         randomUserObservable.subscribe(this::updateSecondUser);
         randomUserObservable.subscribe(this::updateThirdUser);
@@ -77,9 +76,10 @@ public class MainActivity extends DemoBaseActivity {
                 .subscribe(this::updateThirdUser);
 
         Observable<OnClickEvent> refreshClick = clicks(findViewById(R.id.btnRefresh));
-        refreshClick.flatMap(onClickEvent -> randomUserObservable).subscribe(this::updateFirstUser);
-        refreshClick.flatMap(onClickEvent -> randomUserObservable).subscribe(this::updateSecondUser);
-        refreshClick.flatMap(onClickEvent -> randomUserObservable).subscribe(this::updateThirdUser);
+        Observable<User> userObservable = refreshClick.flatMap(onClickEvent -> randomUserObservable);
+        userObservable.subscribe(this::updateFirstUser);
+        userObservable.subscribe(this::updateSecondUser);
+        userObservable.subscribe(this::updateThirdUser);
     }
 
 
