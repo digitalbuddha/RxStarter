@@ -36,7 +36,6 @@ public class MainActivity extends DemoBaseActivity {
 
     private Observable<User> nextUserObservable;
     private List<ViewModel> viewIds;
-    private Observable<ArrayList<User>> usersObservable;
     private Observable<User> nextThreeObservable;
 
 
@@ -49,7 +48,31 @@ public class MainActivity extends DemoBaseActivity {
 
         nextThreeObservable.subscribe(this::updateUser);
 
+        subscribeToClicks();
+    }
+
+
+
+    private void createObservables() {
+        Observable<ArrayList<User>> usersObservable = api.users()
+                .cache()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+
+        nextUserObservable = usersObservable
+                .map(users -> users.get(index++));
+
+        nextThreeObservable = usersObservable
+                .map(users -> new ArrayList<>(Arrays.asList(
+                        users.get(index),
+                        users.get(index + 1),
+                        users.get(index + 2))))
+                .flatMap(Observable::from);
+    }
+
+    private void subscribeToClicks() {
         ViewObservable.clicks(findViewById(R.id.btnRefresh))
+                .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextThreeObservable)
                 .subscribe(this::updateUser);
 
@@ -74,23 +97,6 @@ public class MainActivity extends DemoBaseActivity {
                 .subscribe(user -> updateUserAtPosition(user, 2));
     }
 
-    private void createObservables() {
-        usersObservable = api.users()
-                .cache()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-
-        nextUserObservable = usersObservable
-                .map(users -> users.get(index++));
-
-        nextThreeObservable = usersObservable
-                .map(users -> new ArrayList<>(Arrays.asList(
-                        users.get(index),
-                        users.get(index + 1),
-                        users.get(index + 2))))
-                .flatMap(Observable::from);
-    }
-
     private void initViewIds() {
         viewIds = new ArrayList<>();
         viewIds.add(new ViewModel(R.id.name1, R.id.avatar1));
@@ -106,11 +112,7 @@ public class MainActivity extends DemoBaseActivity {
 
     private void updateUserAtPosition(User user, int viewToChange) {
         ViewModel viewModel = viewIds.get(viewToChange);
-        bindData(viewModel.getNameId(),viewModel.getAvatarID(),user);
-    }
-
-    private void bindData(int textviewID, int imageViewId, User user) {
-        ((TextView) view(textviewID)).setText(user.login);
-        Picasso.with(context).load(user.avatar_url).into((ImageView) view(imageViewId));
+        ((TextView) view(viewModel.getNameId())).setText(user.login);
+        Picasso.with(context).load(user.avatar_url).into((ImageView) view(viewModel.getAvatarID()));
     }
 }
