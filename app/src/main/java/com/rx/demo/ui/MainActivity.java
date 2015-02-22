@@ -14,7 +14,6 @@ import com.rx.demo.rest.Github;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,9 +33,9 @@ public class MainActivity extends DemoBaseActivity {
     Context context;
     int index;
 
-    private Observable<User> nextUserObservable;
+    private Observable<User> nextUser;
     private List<ViewModel> viewIds;
-    private Observable<User> nextThreeObservable;
+    private Observable<User> next3Users;
 
 
     @Override
@@ -46,11 +45,10 @@ public class MainActivity extends DemoBaseActivity {
 
         createObservables();
 
-        nextThreeObservable.subscribe(this::updateUser);
+        next3Users.subscribe(this::updateUser);
 
         subscribeToClicks();
     }
-
 
 
     private void createObservables() {
@@ -59,38 +57,33 @@ public class MainActivity extends DemoBaseActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
-        nextUserObservable = usersObservable
+        nextUser = usersObservable
                 .map(users -> users.get(index++));
 
-        nextThreeObservable = usersObservable
-                .map(users -> new ArrayList<>(Arrays.asList(
-                        users.get(index),
-                        users.get(index + 1),
-                        users.get(index + 2))))
-                .flatMap(Observable::from);
+        next3Users = Observable.merge(nextUser, nextUser, nextUser);
     }
 
     private void subscribeToClicks() {
         ViewObservable.clicks(findViewById(R.id.btnRefresh))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextThreeObservable)
+                .flatMap(onClickEvent -> next3Users)
                 .subscribe(this::updateUser);
 
         ViewObservable.clicks(view(R.id.close1))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUserObservable)
+                .flatMap(onClickEvent -> nextUser)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 0));
 
         ViewObservable.clicks(view(R.id.close2))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUserObservable)
+                .flatMap(onClickEvent -> nextUser)
                 .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 1));
 
         ViewObservable.clicks(view(R.id.close3))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUserObservable)
+                .flatMap(onClickEvent -> nextUser)
                 .doOnError(throwable -> {
                     //do something
                 })
@@ -104,10 +97,9 @@ public class MainActivity extends DemoBaseActivity {
         viewIds.add(new ViewModel(R.id.name3, R.id.avatar3));
     }
 
-    private void updateUser( User user) {
+    private void updateUser(User user) {
         int viewToChange = index % 3;
         updateUserAtPosition(user, viewToChange);
-        index++;
     }
 
     private void updateUserAtPosition(User user, int viewToChange) {
