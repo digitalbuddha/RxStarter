@@ -47,7 +47,6 @@ public class MainActivity extends DemoBaseActivity {
 
                     return users.get(0);
                 })
-                .filter(user -> !user.login.contains("steve"))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
         //initial load of 3  random users
