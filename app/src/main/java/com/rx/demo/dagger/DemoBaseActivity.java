@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
-
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
 
 import java.util.Arrays;
@@ -43,10 +42,9 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
+        setContentView(R.layout.suggestions_layout);
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
-        setContentView(R.layout.suggestions_layout);
-
     }
 
     @Override
