@@ -32,36 +32,34 @@ public class MainActivity extends DemoBaseActivity {
 
     private Observable<User> nextUser;
     private List<ViewModel> viewIds;
-    private Observable<User> next3Users;
-    @Inject AnimationHelper animHelper;
+    @Inject
+    AnimationHelper animHelper;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViewIds();
-        createObservables();
 
-        next3Users.subscribe(this::updateUser);
-        subscribeToClicks();
-    }
+        nextUser = userCommander.get()
+                .doOnError(throwable -> {
 
-
-    private void createObservables() {
-        Observable<ArrayList<User>> usersObservable = userCommander.get(new Object())
+                })
+                .map(users -> users.get(index++))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
-        nextUser = usersObservable
-                .map(users -> users.get(index++));
+        nextUser.repeat(3)
+                .subscribe(this::updateUser);
 
-        next3Users = Observable.merge(nextUser, nextUser, nextUser);
+        subscribeToClicks();
     }
 
     private void subscribeToClicks() {
         ViewObservable.clicks(findViewById(R.id.btnRefresh))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> next3Users)
+                .flatMap(onClickEvent -> nextUser.repeat(3))
+                .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateUser);
 
         ViewObservable.clicks(view(R.id.close1))
@@ -81,9 +79,7 @@ public class MainActivity extends DemoBaseActivity {
         ViewObservable.clicks(view(R.id.close3))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .doOnError(throwable -> {
-                    //do something
-                })
+                .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 2));
 
     }
