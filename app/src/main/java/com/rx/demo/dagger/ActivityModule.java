@@ -17,6 +17,7 @@ package com.rx.demo.dagger;
 
 import android.content.Context;
 
+import com.rx.demo.ui.DemoBaseActivity;
 import com.rx.demo.ui.MainActivity;
 
 import javax.inject.Singleton;

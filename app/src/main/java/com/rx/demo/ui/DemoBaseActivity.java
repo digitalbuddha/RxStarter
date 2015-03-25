@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger;
+package com.rx.demo.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,6 +21,9 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
+import com.rx.demo.dagger.Activity;
+import com.rx.demo.dagger.ActivityModule;
+import com.rx.demo.DemoApplication;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,12 +31,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
-import groovy.transform.CompileStatic;
 
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
  */
-@CompileStatic
 public abstract class DemoBaseActivity extends FragmentActivity {
     ObjectGraph activityGraph;
     @Activity
