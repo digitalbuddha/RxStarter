@@ -1,9 +1,8 @@
 package com.rx.demo.commander;
 
-import com.rx.demo.model.User;
+import com.rx.demo.model.UserRequest;
+import com.rx.demo.model.UserResponse;
 import com.rx.demo.rest.Github;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,8 +11,7 @@ import javax.inject.Singleton;
  * Created by Nakhimovich on 3/25/15.
  */
 @Singleton
-public class UserCommander extends Commander<ArrayList<User>> {
-    private final String accessToken="6b060e39a5cf06b980ec4f1d2042b525026c35d2";
+public class UserCommander extends Commander<UserRequest, UserResponse> {
 
     @Inject
     Github api;
@@ -23,7 +21,8 @@ public class UserCommander extends Commander<ArrayList<User>> {
     }
 
     @Override
-    public ArrayList<User> load(Object request) throws Exception {
-        return api.users("token " + accessToken);
+    public UserResponse load(UserRequest request) throws Exception {
+        UserResponse response = api.users(request.getName());
+        return response;
     }
 }

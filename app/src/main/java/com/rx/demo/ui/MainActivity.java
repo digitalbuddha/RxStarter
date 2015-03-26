@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.commander.UserCommander;
 import com.rx.demo.model.User;
+import com.rx.demo.model.UserRequest;
 import com.rx.demo.model.ViewModel;
 import com.rx.demo.ui.utils.AnimationHelper;
 import com.squareup.picasso.Picasso;
@@ -41,7 +42,8 @@ public class MainActivity extends DemoBaseActivity {
         super.onCreate(savedInstanceState);
         initViewIds();
 
-        nextUser = userCommander.get()
+        nextUser = userCommander.get(new UserRequest("Mike"))
+                .map(userResponse -> userResponse.items)
                 .doOnError(throwable -> {
 
                 })
@@ -65,21 +67,18 @@ public class MainActivity extends DemoBaseActivity {
         ViewObservable.clicks(view(R.id.close1))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 0));
 
 
         ViewObservable.clicks(view(R.id.close2))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 1));
 
 
         ViewObservable.clicks(view(R.id.close3))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 2));
 
     }
