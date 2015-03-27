@@ -112,9 +112,7 @@ public class SuggestionsBox extends LinearLayout {
     private void initSearchBox() {
         ViewObservable.text(search)
                 .debounce(1, TimeUnit.SECONDS)
-                .map(onTextChangeEvent -> {
-                    return onTextChangeEvent.text.toString();
-                })
+                .map(onTextChangeEvent -> onTextChangeEvent.text.toString())
                 .filter(searchTerm -> searchTerm.length() > 0)
                 .subscribe(searchTerm -> {
                     index = 0;
@@ -152,7 +150,8 @@ public class SuggestionsBox extends LinearLayout {
     }
 
     private void showNext3Users() {
-        nextUserObservable().repeat(3)
+        nextUserObservable()
+                .repeat(3)
                 .subscribe(this::displayNextUser);
     }
 
@@ -174,7 +173,9 @@ public class SuggestionsBox extends LinearLayout {
         View card = findViewById(viewModel.getCardId());
         animHelper.showCard(card);
         ((TextView) findViewById(viewModel.getNameId())).setText(user.login);
-        Picasso.with(getContext()).load(user.avatar_url).into((ImageView) findViewById(viewModel.getAvatarID()));
+        Picasso.with(getContext())
+                .load(user.avatar_url)
+                .into((ImageView) findViewById(viewModel.getAvatarID()));
     }
 
 
