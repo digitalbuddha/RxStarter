@@ -15,7 +15,7 @@ import com.rx.demo.commander.UserCommander;
 import com.rx.demo.model.User;
 import com.rx.demo.model.UserRequest;
 import com.rx.demo.model.ViewModel;
-import com.rx.demo.ui.DemoBaseActivity;
+import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.utils.AnimationHelper;
 import com.squareup.picasso.Picasso;
 

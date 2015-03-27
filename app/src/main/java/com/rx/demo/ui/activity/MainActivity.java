@@ -1,4 +1,4 @@
-package com.rx.demo.ui;
+package com.rx.demo.ui.activity;
 
 import android.os.Bundle;
 
@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 
 
-public class MainActivity extends com.rx.demo.ui.DemoBaseActivity {
+public class MainActivity extends DemoBaseActivity {
     @InjectView(R.id.suggestionBox)
     SuggestionsBox suggestionsBox;
 

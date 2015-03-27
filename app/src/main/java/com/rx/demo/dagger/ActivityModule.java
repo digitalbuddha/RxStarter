@@ -15,8 +15,8 @@
  */
 package com.rx.demo.dagger;
 
-import com.rx.demo.ui.DemoBaseActivity;
-import com.rx.demo.ui.MainActivity;
+import com.rx.demo.ui.activity.DemoBaseActivity;
+import com.rx.demo.ui.activity.MainActivity;
 import com.rx.demo.ui.view.SuggestionsBox;
 
 import javax.inject.Singleton;

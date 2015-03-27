@@ -1,12 +1,12 @@
 <com.rx.demo.ui.view.SuggestionsBox xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/bg_gray"
-              tools:context="com.digitalbuddha.daggerdemo.com.digitalbuddha.starter.ui.GithubActivity"
-              android:id="@+id/suggestionBox"
-              android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_gray"
+    tools:context="com.digitalbuddha.daggerdemo.com.digitalbuddha.starter.ui.GithubActivity"
+    android:id="@+id/suggestionBox"
+    android:orientation="vertical"
     >
 
     <EditText
@@ -20,6 +20,7 @@
         android:background="@drawable/white_with_border"
         android:textColor="@color/black_gray"
         android:textSize="32dp"
+        android:textColorHint="@color/slider_gray"
         android:hint="Name to Search" />
 
     <RelativeLayout

@@ -26,7 +26,7 @@
         <meta-data android:name="AA_DB_VERSION" android:value="1" />
 
         <activity
-            android:name="com.rx.demo.ui.MainActivity"
+            android:name="com.rx.demo.ui.activity.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
