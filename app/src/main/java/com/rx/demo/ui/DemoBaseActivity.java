@@ -19,11 +19,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
+import com.rx.demo.DemoApplication;
 import com.rx.demo.dagger.Activity;
 import com.rx.demo.dagger.ActivityModule;
-import com.rx.demo.DemoApplication;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
+import icepick.Icepick;
 
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
@@ -43,15 +45,27 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.suggestions_layout);
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
     protected void onDestroy() {
         activityGraph = null;
+
         super.onDestroy();
+    }
+
+    public Toast displayError(Throwable throwable) {
+        return Toast.makeText(this, throwable.toString(), Toast.LENGTH_SHORT);
     }
 
     protected List<Object> getModules() {
@@ -59,6 +73,6 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     }
 
     protected View view(int id) {
-       return findViewById(id);
+        return findViewById(id);
     }
 }

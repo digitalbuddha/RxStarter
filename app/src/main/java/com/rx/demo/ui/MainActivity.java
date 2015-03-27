@@ -19,66 +19,85 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import icepick.Icicle;
 import rx.Observable;
 import rx.android.observables.ViewObservable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static rx.android.observables.ViewObservable.clicks;
 
-public class MainActivity extends DemoBaseActivity {
+
+public class MainActivity extends com.rx.demo.ui.DemoBaseActivity {
     @Inject
     public UserCommander userCommander;
-
-    private int index;
-
-    private Observable<User> nextUser;
-    private List<ViewModel> viewIds;
     @Inject
     AnimationHelper animHelper;
+    @Icicle
+    int index;
+
+    private List<ViewModel> viewIds;
+    @Icicle
+    String searchTerm = "";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViewIds();
-
-        nextUser = userCommander.get(new UserRequest("Mike"))
-                .map(userResponse -> userResponse.items)
-                .doOnError(throwable -> {
-
-                })
-                .map(users -> users.get(index++))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-
-        nextUser.repeat(3)
-                .subscribe(this::updateUser);
-
-        subscribeToClicks();
+        initSearchBox();
+        setupClickEvents();
     }
 
-    private void subscribeToClicks() {
-        ViewObservable.clicks(findViewById(R.id.btnRefresh))
-                .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUser.repeat(3))
-                .onErrorReturn(throwable -> new User())
-                .subscribe(this::updateUser);
+    private void displayNext3Users() {
+        nextUserObservable().repeat(3)
+                .subscribe(this::displayNextUser);
+    }
 
-        ViewObservable.clicks(view(R.id.close1))
+    private Observable<User> nextUserObservable() {
+        return userCommander.get(new UserRequest(searchTerm))
+                .map(userResponse -> userResponse.items)
+                .map(users -> users.get(index++))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnError(this::displayError);
+    }
+
+
+    private void initSearchBox() {
+        ViewObservable.text((TextView) view(R.id.search))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUser)
+                .map(onTextChangeEvent -> onTextChangeEvent.text.toString())
+                .filter(searchTerm -> searchTerm.length() > 0)
+                .subscribe(searchTerm -> {
+                    index = 0;
+                    this.searchTerm = searchTerm;
+                    displayNext3Users();
+                });
+    }
+
+    private void setupClickEvents() {
+        clicks(findViewById(R.id.btnRefresh))
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .flatMap(onClickEvent -> nextUserObservable().repeat(3))
+                .onErrorReturn(throwable -> new User())
+                .subscribe(this::displayNextUser);
+
+        clicks(view(R.id.close1))
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .flatMap(onClickEvent -> nextUserObservable())
                 .subscribe(user -> updateUserAtPosition(user, 0));
 
 
-        ViewObservable.clicks(view(R.id.close2))
-                .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUser)
+        clicks(view(R.id.close2))
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .flatMap(onClickEvent -> nextUserObservable())
                 .subscribe(user -> updateUserAtPosition(user, 1));
 
 
-        ViewObservable.clicks(view(R.id.close3))
-                .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> nextUser)
+        clicks(view(R.id.close3))
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .flatMap(onClickEvent -> nextUserObservable())
                 .subscribe(user -> updateUserAtPosition(user, 2));
 
     }
@@ -90,7 +109,7 @@ public class MainActivity extends DemoBaseActivity {
         viewIds.add(new ViewModel(R.id.card3, R.id.name3, R.id.avatar3));
     }
 
-    private void updateUser(User user) {
+    private void displayNextUser(User user) {
         int viewToChange = index % 3;
         updateUserAtPosition(user, viewToChange);
     }

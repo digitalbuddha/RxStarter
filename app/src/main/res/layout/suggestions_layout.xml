@@ -8,6 +8,18 @@
               android:id="@+id/DigitalBuddha"
               android:orientation="vertical">
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/search"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/white_with_border"
+        android:textColor="@color/black_gray"
+        android:textSize="32dp"
+        android:hint="Name to Search" />
+
     <RelativeLayout
         android:id="@+id/card1"
         android:layout_width="match_parent"
@@ -31,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/name1"
-            android:text="name"
+            android:text=""
             android:textColor="@color/black_gray"
             android:textSize="20sp"
             android:layout_centerVertical="true"/>
@@ -75,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/name2"
-            android:text="name"
+            android:text=""
             android:textSize="20sp"
             android:textColor="@color/black_gray"
             android:layout_centerVertical="true"/>
@@ -119,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/name3"
-            android:text="name"
+            android:text=""
             android:textSize="20sp"
             android:textColor="@color/black_gray"
             android:layout_centerVertical="true"/>
@@ -145,7 +157,7 @@
         android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Refresh"
+        android:text="Next 3"
         android:textColor="@color/black_gray"
         android:padding="@dimen/activity_vertical_margin"
         android:id="@+id/btnRefresh"
