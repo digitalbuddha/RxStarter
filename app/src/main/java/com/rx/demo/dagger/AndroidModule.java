@@ -15,8 +15,6 @@
  */
 package com.rx.demo.dagger;
 
-import android.content.Context;
-
 import com.rx.demo.DemoApplication;
 import com.rx.demo.commander.UserCommander;
 import com.rx.demo.rest.Github;
@@ -32,7 +30,6 @@ import retrofit.RestAdapter;
         })
 public class AndroidModule {
     DemoApplication application;
-    RestAdapter restAdapter;
 
     public AndroidModule(DemoApplication application) {
         this.application = application;
@@ -40,15 +37,8 @@ public class AndroidModule {
 
     @Provides
     @Singleton
-    @ForApplication
-    Context provideApplicationContext() {
-         return application;
-    }
-
-    @Provides
-    @Singleton
     RestAdapter provideRestAdapter() {
-       return restAdapter = new RestAdapter.Builder()
+        return new RestAdapter.Builder()
                 .setEndpoint("https://api.github.com")
                 .build();
     }
@@ -56,7 +46,6 @@ public class AndroidModule {
     @Provides
     @Singleton
     Github provideGithub(RestAdapter restAdapter) {
-       return  restAdapter.create(Github.class);
+        return restAdapter.create(Github.class);
     }
-
 }

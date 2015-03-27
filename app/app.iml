@@ -106,6 +106,7 @@
     <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
     <orderEntry type="library" exported="" name="icepick-processor-3.0.3-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="icepick-3.0.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="butterknife-6.1.0" level="project" />
     <orderEntry type="library" exported="" name="quoin-0.1.2" level="project" />
     <orderEntry type="library" exported="" name="clojure-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="javax.inject-1" level="project" />

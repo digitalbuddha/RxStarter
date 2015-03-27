@@ -15,7 +15,6 @@
  */
 package com.rx.demo.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -23,14 +22,12 @@ import android.widget.Toast;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.DemoApplication;
-import com.rx.demo.dagger.Activity;
 import com.rx.demo.dagger.ActivityModule;
 
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import icepick.Icepick;
 
@@ -39,16 +36,15 @@ import icepick.Icepick;
  */
 public abstract class DemoBaseActivity extends FragmentActivity {
     ObjectGraph activityGraph;
-    @Activity
-    @Inject
-    protected Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.suggestions_layout);
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
+        setContentView(R.layout.suggestions_layout);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+        ButterKnife.inject(this);
+
     }
 
     @Override
@@ -74,5 +70,10 @@ public abstract class DemoBaseActivity extends FragmentActivity {
 
     protected View view(int id) {
         return findViewById(id);
+    }
+
+    public void inject(View view) {
+        activityGraph.inject(view);
+
     }
 }

@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * Created by Nakhimovich on 3/25/15.
  */
 @Singleton
-public class UserCommander extends Commander<UserRequest, UserResponse> {
+public class UserCommander extends RxCommander<UserRequest, UserResponse> {
 
     @Inject
     Github api;

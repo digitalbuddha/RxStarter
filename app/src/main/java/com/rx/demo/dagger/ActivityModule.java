@@ -15,10 +15,9 @@
  */
 package com.rx.demo.dagger;
 
-import android.content.Context;
-
 import com.rx.demo.ui.DemoBaseActivity;
 import com.rx.demo.ui.MainActivity;
+import com.rx.demo.ui.view.SuggestionsBox;
 
 import javax.inject.Singleton;
 
@@ -27,7 +26,7 @@ import dagger.Provides;
 
 @Module(
         injects = {
-                MainActivity.class
+                MainActivity.class, SuggestionsBox.class
         },
         addsTo = AndroidModule.class,
         library = true
@@ -41,9 +40,7 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    @Activity
-    Context provideActivityContext() {
+    DemoBaseActivity provideActivityContext() {
         return activity;
     }
-
 }

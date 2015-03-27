@@ -15,14 +15,14 @@ import static com.rx.demo.util.ObservableUtils.observabler;
 
 
 //T = request type, V = response type
-public abstract class Commander<T, V> {
+public abstract class RxCommander<T, V> {
     private final Map<String, V> cachedResponses;
     protected Map<String, Observable<V>> inFlightRequests = new HashMap<>();
     protected PublishSubject<V> updateObservable = PublishSubject.create();
-    public static List<Commander> commanderList = new ArrayList<>();
+    public static List<RxCommander> commanderList = new ArrayList<>();
     private Gson gson=new Gson();
 
-    public Commander() {
+    public RxCommander() {
         cachedResponses = Collections.synchronizedMap(new HashMap<>());
         inFlightRequests = Collections.synchronizedMap(new HashMap<>());
 
