@@ -6,10 +6,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
-import com.rx.demo.dagger.DemoBaseActivity;
+import com.rx.demo.commander.UserCommander;
 import com.rx.demo.model.User;
+import com.rx.demo.model.UserRequest;
 import com.rx.demo.model.ViewModel;
-import com.rx.demo.rest.Github;
 import com.rx.demo.ui.utils.AnimationHelper;
 import com.squareup.picasso.Picasso;
 
@@ -27,72 +27,60 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends DemoBaseActivity {
     @Inject
-    public Github api;
+    public UserCommander userCommander;
 
     private int index;
 
     private Observable<User> nextUser;
     private List<ViewModel> viewIds;
-    private Observable<User> next3Users;
-    private AnimationHelper animHelper;
+    @Inject
+    AnimationHelper animHelper;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViewIds();
-        animHelper = new AnimationHelper();
-        createObservables();
 
-        next3Users.subscribe(this::updateUser);
+        nextUser = userCommander.get(new UserRequest("Mike"))
+                .map(userResponse -> userResponse.items)
+                .doOnError(throwable -> {
 
-        subscribeToClicks();
-    }
-
-
-    private void createObservables() {
-        Observable<ArrayList<User>> usersObservable = api.users()
-                .cache()
+                })
+                .map(users -> users.get(index++))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
-        nextUser = usersObservable
-                .map(users -> users.get(index++));
+        nextUser.repeat(3)
+                .subscribe(this::updateUser);
 
-        next3Users = Observable.merge(nextUser, nextUser, nextUser);
+        subscribeToClicks();
     }
 
     private void subscribeToClicks() {
         ViewObservable.clicks(findViewById(R.id.btnRefresh))
                 .debounce(1, TimeUnit.SECONDS)
-                .flatMap(onClickEvent -> next3Users)
+                .flatMap(onClickEvent -> nextUser.repeat(3))
+                .onErrorReturn(throwable -> new User())
                 .subscribe(this::updateUser);
 
         ViewObservable.clicks(view(R.id.close1))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 0));
-        View card1 = view(viewIds.get(0).getCardId());
-        animHelper.dismissCard(card1);
+
 
         ViewObservable.clicks(view(R.id.close2))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .onErrorReturn(throwable -> new User())
                 .subscribe(user -> updateUserAtPosition(user, 1));
-        View card2 = view(viewIds.get(1).getCardId());
-        animHelper.dismissCard(card2);
+
 
         ViewObservable.clicks(view(R.id.close3))
                 .debounce(1, TimeUnit.SECONDS)
                 .flatMap(onClickEvent -> nextUser)
-                .doOnError(throwable -> {
-                    //do something
-                })
                 .subscribe(user -> updateUserAtPosition(user, 2));
-        View card3 = view(viewIds.get(2).getCardId());
-        animHelper.dismissCard(card3);
+
     }
 
     private void initViewIds() {

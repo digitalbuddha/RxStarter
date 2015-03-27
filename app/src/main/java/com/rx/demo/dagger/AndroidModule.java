@@ -17,6 +17,8 @@ package com.rx.demo.dagger;
 
 import android.content.Context;
 
+import com.rx.demo.DemoApplication;
+import com.rx.demo.commander.UserCommander;
 import com.rx.demo.rest.Github;
 
 import javax.inject.Singleton;
@@ -26,7 +28,7 @@ import dagger.Provides;
 import retrofit.RestAdapter;
 
 @Module(library = true,
-        injects = {
+        injects = {UserCommander.class
         })
 public class AndroidModule {
     DemoApplication application;

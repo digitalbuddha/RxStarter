@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger;
+package com.rx.demo;
 
 import android.app.Application;
+
+import com.rx.demo.dagger.AndroidModule;
 
 import java.util.Arrays;
 import java.util.List;
 
 import dagger.ObjectGraph;
-import groovy.transform.CompileStatic;
 
-@CompileStatic
 public class DemoApplication extends Application {
     public ObjectGraph getApplicationGraph() {
         return applicationGraph;
