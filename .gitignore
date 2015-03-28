@@ -26,3 +26,7 @@ proguard/
 
 # Log Files
 *.log
+
+# ideal config file
+*.iml
+.idea/
