@@ -17,6 +17,7 @@ import com.rx.demo.model.UserRequest;
 import com.rx.demo.model.ViewModel;
 import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.utils.AnimationHelper;
+import com.rx.demo.util.SubscriptionManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class SuggestionsBox extends LinearLayout {
     AnimationHelper animHelper;
     @Inject
     DemoBaseActivity activity;
-
+    @Inject
+    SubscriptionManager subscriptionManager;
     @InjectView(R.id.searchBox)
     EditText search;
     @InjectView(R.id.btnRefresh)
@@ -110,49 +112,52 @@ public class SuggestionsBox extends LinearLayout {
 
 
     private void initSearchBox() {
-        ViewObservable.text(search)
+        subscriptionManager.addSubscription(ViewObservable.text(search)
                 .debounce(1, TimeUnit.SECONDS)
                 .map(onTextChangeEvent -> onTextChangeEvent.text.toString())
                 .filter(searchTerm -> searchTerm.length() > 0)
-                .subscribe(searchTerm -> {
+                .doOnNext(s -> {
                     index = 0;
-                    this.searchTerm = searchTerm;
-                    showNext3Users();
-                });
+                    searchTerm = s;
+                })
+                .flatMap(s -> next3UsersObservable())
+                .subscribe(this::displayNextUser));
+
+
     }
 
     private void setupClickEvents() {
-        clicks(refresh)
+        subscriptionManager.addSubscription(clicks(refresh)
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .flatMap(onClickEvent -> nextUserObservable().repeat(3))
                 .onErrorReturn(throwable -> new User())
-                .subscribe(this::displayNextUser);
+                .subscribe(this::displayNextUser));
 
-        clicks(close1)
+        subscriptionManager.addSubscription(clicks(close1)
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .flatMap(onClickEvent -> nextUserObservable())
-                .subscribe(user -> updateUserAtPosition(user, 0));
+                .subscribe(user -> updateUserAtPosition(user, 0)));
 
 
-        clicks(close2)
+        subscriptionManager.addSubscription(clicks(close2)
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .flatMap(onClickEvent -> nextUserObservable())
                 .subscribe(user -> updateUserAtPosition(user, 1), throwable -> {
 
-                });
+                }));
 
 
-        clicks(close3)
+        subscriptionManager.addSubscription(clicks(close3)
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .flatMap(onClickEvent -> nextUserObservable())
-                .subscribe(user -> updateUserAtPosition(user, 2));
+                .subscribe(user -> updateUserAtPosition(user, 2)));
 
     }
 
-    private void showNext3Users() {
-        nextUserObservable()
-                .repeat(3)
-                .subscribe(this::displayNextUser);
+    private Observable<User> next3UsersObservable() {
+        return nextUserObservable()
+                .repeat(3);
+
     }
 
     private void initViewModels() {
@@ -177,8 +182,6 @@ public class SuggestionsBox extends LinearLayout {
                 .load(user.avatar_url)
                 .into((ImageView) findViewById(viewModel.getAvatarID()));
     }
-
-
 
 
 }

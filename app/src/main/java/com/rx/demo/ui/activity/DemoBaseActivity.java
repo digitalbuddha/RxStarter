@@ -23,9 +23,12 @@ import android.widget.Toast;
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.DemoApplication;
 import com.rx.demo.dagger.ActivityModule;
+import com.rx.demo.util.SubscriptionManager;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import dagger.ObjectGraph;
@@ -35,6 +38,8 @@ import icepick.Icepick;
  * Base activity which sets up a per-activity object graph and performs injection.
  */
 public abstract class DemoBaseActivity extends FragmentActivity {
+   @Inject
+    SubscriptionManager subscriptionManager;
     ObjectGraph activityGraph;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,7 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         activityGraph = null;
+        subscriptionManager.unsubscribeAll();
 
         super.onDestroy();
     }
