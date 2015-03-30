@@ -20,7 +20,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.DemoApplication;
 import com.rx.demo.dagger.ActivityModule;
 import com.rx.demo.util.SubscriptionManager;
@@ -38,7 +37,7 @@ import icepick.Icepick;
  * Base activity which sets up a per-activity object graph and performs injection.
  */
 public abstract class DemoBaseActivity extends FragmentActivity {
-   @Inject
+    @Inject
     SubscriptionManager subscriptionManager;
     ObjectGraph activityGraph;
     @Override
@@ -46,9 +45,7 @@ public abstract class DemoBaseActivity extends FragmentActivity {
         super.onCreate (savedInstanceState);
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
-        setContentView(R.layout.suggestions_layout);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        ButterKnife.inject(this);
 
     }
 

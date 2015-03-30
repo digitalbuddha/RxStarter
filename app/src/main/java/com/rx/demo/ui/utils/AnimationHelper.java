@@ -17,63 +17,6 @@ public class AnimationHelper {
     public AnimationHelper() {
     }
 
-    public void dismissCard(View card) {
-
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(
-                ObjectAnimator.ofFloat(card, "translationY", -card.getHeight()),
-                ObjectAnimator.ofFloat(card, "alpha", 1, 0)
-        );
-        set.addListener(new android.animation.Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(android.animation.Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(android.animation.Animator animation) {
-
-                AnimatorSet set = new AnimatorSet();
-                set.playTogether(ObjectAnimator.ofFloat(card, "translationY", 0));
-                set.addListener(new android.animation.Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(android.animation.Animator animation) {
-
-                        card.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(android.animation.Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationCancel(android.animation.Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(android.animation.Animator animation) {
-
-                    }
-                });
-                set.setDuration(0).start();
-            }
-
-            @Override
-            public void onAnimationCancel(android.animation.Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(android.animation.Animator animation) {
-
-            }
-        });
-        set.setInterpolator(new AccelerateInterpolator(1.1f));
-        set.setDuration(600).start();
-    }
-
     public void showCard(View card) {
 
         AnimatorSet reset = new AnimatorSet();

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.model.User;
+import com.rx.demo.observable.UserObservables;
 import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.utils.AnimationHelper;
 import com.rx.demo.util.SubscriptionManager;
@@ -33,11 +34,8 @@ import static rx.android.observables.ViewObservable.text;
 public class SuggestionsBox extends ScrollView {
     @Inject
     UserObservables userObservables;
-
     @Inject
     AnimationHelper animHelper;
-    @Inject
-    DemoBaseActivity activity;
     @Inject
     SubscriptionManager subscriptionManager;
     @InjectView(R.id.searchBox)
@@ -85,7 +83,7 @@ public class SuggestionsBox extends ScrollView {
 
 
     private void initRefresh() {
-        //display next 3 users on refresh click
+        //show next 3 users on refresh click
         subscriptionManager.addSubscription(clicks(refresh)
                 .debounce(250, TimeUnit.MILLISECONDS)
                 .flatMap(onClickEvent -> userObservables.next3UserStream())
@@ -101,7 +99,7 @@ public class SuggestionsBox extends ScrollView {
     private void createNewUserCard(User user) {
         UserCard userCard = (UserCard) inflate(getContext(), R.layout.user_card, null);
         bindUserData(user, userCard);
-        initCloseButton(userCard, user);
+        initCloseButton(userCard);
     }
 
     private void bindUserData(User user, UserCard userCard) {
@@ -115,10 +113,12 @@ public class SuggestionsBox extends ScrollView {
 
     }
 
-    private void initCloseButton(UserCard oldCarc, User user) {
-        subscriptionManager.addSubscription(clicks(oldCarc.findViewById(R.id.close))
+    private void initCloseButton(UserCard oldCard) {
+        subscriptionManager.addSubscription(clicks(oldCard.findViewById(R.id.close))
                 .flatMap((OnClickEvent onClickEvent) -> userObservables.nextUserObservable())
-                .subscribe(newUser -> cardsLayout.removeView(oldCarc)));
+                .subscribe(newUser -> {
+                    cardsLayout.removeView(oldCard);
+                }));
     }
 
     //onRotate, make sure we start at same user index that we left off

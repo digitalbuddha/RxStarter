@@ -1,4 +1,4 @@
-package com.rx.demo.ui.view;
+package com.rx.demo.observable;
 
 import com.rx.demo.commander.UserCommander;
 import com.rx.demo.model.User;
@@ -20,7 +20,7 @@ public class UserObservables {
     private String searchTerm;
 
 
-    Observable<User> nextUserObservable() {
+    public Observable<User> nextUserObservable() {
         return userCommander
                 .get(new UserRequest(searchTerm))
                 .map(userResponse -> userResponse.items.get(index++))
@@ -28,7 +28,7 @@ public class UserObservables {
                 .doOnError(activity::displayError);
     }
 
-    Observable<User> next3UserStream() {
+    public Observable<User> next3UserStream() {
         return nextUserObservable()
                 .repeat(3);
     }
