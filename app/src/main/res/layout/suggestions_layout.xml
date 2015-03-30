@@ -4,176 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_gray"
-    tools:context="com.digitalbuddha.daggerdemo.com.digitalbuddha.starter.ui.GithubActivity"
-    android:id="@+id/suggestionBox"
-    android:orientation="vertical"
-    >
+    android:id="@+id/suggestionBox">
 
-    <EditText
-        android:layout_weight="1"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/searchBox"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/white_with_border"
-        android:textColor="@color/black_gray"
-        android:textSize="32dp"
-        android:textColorHint="@color/slider_gray"
-        android:hint="Name to Search" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_weight="1"
-
-        android:id="@+id/card1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/white_with_border"
-        android:padding="@dimen/activity_vertical_margin"
-        android:layout_margin="@dimen/activity_vertical_margin">
-
-        <com.rx.demo.ui.utils.CircleImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/profile"
-            app:border_color="@color/bg_gray"
-            app:border_width="1dp"
-            android:id="@+id/avatar1"
-            />
-
-        <TextView
-            android:layout_marginLeft="@dimen/activity_vertical_margin"
-            android:layout_toRightOf="@+id/avatar1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/name1"
-            android:text=""
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/searchBox"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/white_with_border"
             android:textColor="@color/black_gray"
-            android:textSize="20sp"
-            android:layout_centerVertical="true"/>
+            android:textSize="32dp"
+            android:textColorHint="@color/slider_gray"
+            android:hint="Name to Search" />
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/followers1"-->
-        <!--android:text="HTTP://sample" />-->
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/close1"
-            android:background="@android:color/transparent"
-            android:src="@drawable/close"
-            android:scaleType="centerCrop"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_weight="1"
-
-        android:id="@+id/card2"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/white_with_border"
-        android:padding="@dimen/activity_vertical_margin"
-        android:layout_margin="@dimen/activity_vertical_margin">
-
-        <com.rx.demo.ui.utils.CircleImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/profile"
-            app:border_color="@color/bg_gray"
-            app:border_width="1dp"
-            android:id="@+id/avatar2" />
-
-        <TextView
-            android:layout_marginLeft="@dimen/activity_vertical_margin"
-            android:layout_toRightOf="@+id/avatar2"
+        <Button
+            android:layout_gravity="right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/name2"
-            android:text=""
-            android:textSize="20sp"
+            android:layout_height="100dp"
+            android:text="Next 3"
             android:textColor="@color/black_gray"
-            android:layout_centerVertical="true"/>
+            android:padding="@dimen/activity_vertical_margin"
+            android:id="@+id/btnRefresh"
+            android:background="@drawable/white_with_border" />
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/followers1"-->
-        <!--android:text="HTTP://sample" />-->
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/close2"
-            android:background="@android:color/transparent"
-            android:src="@drawable/close"
-            android:scaleType="centerCrop"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_weight="1"
-
-        android:id="@+id/card3"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/white_with_border"
-        android:padding="@dimen/activity_vertical_margin"
-        android:layout_margin="@dimen/activity_vertical_margin">
-
-        <com.rx.demo.ui.utils.CircleImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/profile"
-            app:border_color="@color/bg_gray"
-            app:border_width="1dp"
-            android:id="@+id/avatar3" />
-
-        <TextView
-            android:layout_marginLeft="@dimen/activity_vertical_margin"
-            android:layout_toRightOf="@+id/avatar3"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/name3"
-            android:text=""
-            android:textSize="20sp"
-            android:textColor="@color/black_gray"
-            android:layout_centerVertical="true"/>
+            android:id="@+id/cards"
+            android:orientation="vertical">
+        </LinearLayout>
 
-        <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/followers1"-->
-        <!--android:text="HTTP://sample" />-->
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/close3"
-            android:background="@android:color/transparent"
-            android:src="@drawable/close"
-            android:scaleType="centerCrop"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <Button
-        android:layout_weight="1"
-
-        android:layout_gravity="right"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:text="Next 3"
-        android:textColor="@color/black_gray"
-        android:padding="@dimen/activity_vertical_margin"
-        android:id="@+id/btnRefresh"
-        android:layout_margin="@dimen/activity_vertical_margin"
-        android:background="@drawable/white_with_border"/>
-
+    </LinearLayout>
 </com.rx.demo.ui.view.SuggestionsBox>
 

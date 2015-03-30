@@ -3,15 +3,17 @@ package com.rx.demo.model;
 /**
  * Created by Nakhimovich on 2/21/15.
  */
-public class ViewModel {
+public class Card {
     final int cardId;
     final int nameId;
     final int avatarID;
+    private int closeId;
 
-    public ViewModel(int cardId, int nameId, int avatarID) {
+    public Card(int cardId, int nameId, int avatarID, int closeId) {
         this.cardId = cardId;
         this.nameId = nameId;
         this.avatarID = avatarID;
+        this.closeId = closeId;
     }
 
     public int getCardId() {
@@ -24,5 +26,9 @@ public class ViewModel {
 
     public int getAvatarID() {
         return avatarID;
+    }
+
+    public int getCloseId() {
+        return closeId;
     }
 }
