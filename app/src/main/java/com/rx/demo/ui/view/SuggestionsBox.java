@@ -42,6 +42,8 @@ public class SuggestionsBox extends ScrollView {
     EditText search;
     @InjectView(R.id.btnRefresh)
     Button refresh;
+    @InjectView(R.id.btnNext)
+    Button next;
     @InjectView(R.id.cards)
     LinearLayout cardsLayout;
 
@@ -67,7 +69,7 @@ public class SuggestionsBox extends ScrollView {
         ButterKnife.inject(this);
 
         initSearchBox();
-        initRefresh();
+        initButtons();
     }
 
     private void initSearchBox() {
@@ -77,16 +79,20 @@ public class SuggestionsBox extends ScrollView {
                 .map(onTextChangeEvent -> onTextChangeEvent.text.toString())
                 .filter(searchTerm -> searchTerm.length() > 0)
                 .doOnNext(userObservables::setSearchTerm)
-                .flatMap(s -> userObservables.next3UserStream())
+                .flatMap(s -> userObservables.next3User())
                 .subscribe(this::displayUser));
     }
 
 
-    private void initRefresh() {
+    private void initButtons() {
         //show next 3 users on refresh click
         subscriptionManager.addSubscription(clicks(refresh)
                 .debounce(250, TimeUnit.MILLISECONDS)
-                .flatMap(onClickEvent -> userObservables.next3UserStream())
+                .flatMap(onClickEvent -> userObservables.next3User())
+                .subscribe(this::displayUser));
+        subscriptionManager.addSubscription(clicks(next)
+                .debounce(250, TimeUnit.MILLISECONDS)
+                .flatMap(onClickEvent -> userObservables.nextUser())
                 .subscribe(this::displayUser));
     }
 
@@ -115,7 +121,7 @@ public class SuggestionsBox extends ScrollView {
 
     private void initCloseButton(UserCard oldCard) {
         subscriptionManager.addSubscription(clicks(oldCard.findViewById(R.id.close))
-                .flatMap((OnClickEvent onClickEvent) -> userObservables.nextUserObservable())
+                .flatMap((OnClickEvent onClickEvent) -> userObservables.nextUser())
                 .subscribe(newUser -> {
                     cardsLayout.removeView(oldCard);
                 }));

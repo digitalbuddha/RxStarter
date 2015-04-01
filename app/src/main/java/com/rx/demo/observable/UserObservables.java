@@ -20,7 +20,7 @@ public class UserObservables {
     private String searchTerm;
 
 
-    public Observable<User> nextUserObservable() {
+    public Observable<User> nextUser() {
         return userCommander
                 .get(new UserRequest(searchTerm))
                 .map(userResponse -> userResponse.items.get(index++))
@@ -28,8 +28,8 @@ public class UserObservables {
                 .doOnError(activity::displayError);
     }
 
-    public Observable<User> next3UserStream() {
-        return nextUserObservable()
+    public Observable<User> next3User() {
+        return nextUser()
                 .repeat(3);
     }
 
