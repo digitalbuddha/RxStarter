@@ -1,5 +1,7 @@
 package com.rx.demo.commander;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -43,8 +45,11 @@ public abstract class RxCommander<T, V> {
     }
 
     public Observable<V> get(final T request) {
+        Log.e(this.getClass().getName(),"rx get");
         V cachedValue = getCachedValue(request);
-        return cachedValue == null ? fresh(request) : observabler(cachedValue);
+
+        //returning a cached fresh response to prevent operators such as repeat from hitting network more than once.
+        return cachedValue == null ? fresh(request).cache() : observabler(cachedValue);
     }
 
     boolean isInFlightNetwork(T request) {

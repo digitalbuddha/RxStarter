@@ -29,7 +29,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import icepick.Icepick;
 
@@ -63,8 +62,8 @@ public abstract class DemoBaseActivity extends FragmentActivity {
         super.onDestroy();
     }
 
-    public Toast displayError(Throwable throwable) {
-        return Toast.makeText(this, throwable.toString(), Toast.LENGTH_SHORT);
+    public void displayError(Throwable throwable) {
+         Toast.makeText(this, throwable.toString(), Toast.LENGTH_SHORT).show();
     }
 
     protected List<Object> getModules() {

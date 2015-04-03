@@ -6,48 +6,44 @@ import com.rx.demo.model.UserRequest;
 import com.rx.demo.transformer.WorkOnIoResultOnMain;
 import com.rx.demo.ui.activity.DemoBaseActivity;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.inject.Inject;
 
 import rx.Observable;
 
-public class UserObservables {
-     @Inject
+public class SuggestionPresenter {
+    @Inject
     public UserCommander userCommander;
     @Inject
     DemoBaseActivity activity;
 
-    int index;
-    private String searchTerm;
+    AtomicInteger index = new AtomicInteger();
 
-
-    public Observable<User> nextUser() {
+    public Observable<User> nextUser(String s) {
         return userCommander
-                .get(new UserRequest(searchTerm))
-                .map(userResponse -> userResponse.items.get(index++))
+                .get(new UserRequest(s))
+                .map(userResponse -> userResponse.items.get(index.incrementAndGet()))
                 .compose(new WorkOnIoResultOnMain())
                 .doOnError(activity::displayError);
     }
 
-    public Observable<User> next3User() {
-        return nextUser()
+    public Observable<User> getNextThreeUsers(String s) {
+        return nextUser(s)
                 .repeat(3);
     }
 
-    public void setSearchTerm(String searchTerm) {
-        this.searchTerm = searchTerm;
-        resetIndex();
+    public Observable<User> getFirstThreeUsers(String s) {
+        index.set(0);
+        return getNextThreeUsers(s);
+
     }
 
-
-    public void resetIndex() {
-        index = 0;
-    }
-
-    public int getIndex() {
+    public AtomicInteger getIndex() {
         return index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(AtomicInteger index) {
         this.index = index;
     }
 }

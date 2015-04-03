@@ -12,13 +12,14 @@ import android.widget.TextView;
 
 import com.digitalbuddha.daggerdemo.activitygraphs.R;
 import com.rx.demo.model.User;
-import com.rx.demo.observable.UserObservables;
+import com.rx.demo.observable.SuggestionPresenter;
 import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.utils.AnimationHelper;
 import com.rx.demo.util.SubscriptionManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -26,14 +27,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import icepick.Icepick;
 import icepick.Icicle;
-import rx.android.events.OnClickEvent;
 
 import static rx.android.observables.ViewObservable.clicks;
 import static rx.android.observables.ViewObservable.text;
 
 public class SuggestionsBox extends ScrollView {
     @Inject
-    UserObservables userObservables;
+    SuggestionPresenter suggestionPresenter;
     @Inject
     AnimationHelper animHelper;
     @Inject
@@ -41,14 +41,14 @@ public class SuggestionsBox extends ScrollView {
     @InjectView(R.id.searchBox)
     EditText search;
     @InjectView(R.id.btnRefresh)
-    Button refresh;
+    Button nextThree;
     @InjectView(R.id.btnNext)
     Button next;
     @InjectView(R.id.cards)
     LinearLayout cardsLayout;
 
     @Icicle
-    int index;
+    AtomicInteger index;
 
     public SuggestionsBox(Context context) {
         this(context, null);
@@ -78,31 +78,26 @@ public class SuggestionsBox extends ScrollView {
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .map(onTextChangeEvent -> onTextChangeEvent.text.toString())
                 .filter(searchTerm -> searchTerm.length() > 0)
-                .doOnNext(userObservables::setSearchTerm)
-                .flatMap(s -> userObservables.next3User())
-                .subscribe(this::displayUser));
+                .flatMap(suggestionPresenter::getFirstThreeUsers)
+                .subscribe(this::ShowAnotherUser));
     }
 
 
     private void initButtons() {
-        //show next 3 users on refresh click
-        subscriptionManager.addSubscription(clicks(refresh)
+        //show 3 more users
+        subscriptionManager.addSubscription(clicks(nextThree)
                 .debounce(250, TimeUnit.MILLISECONDS)
-                .flatMap(onClickEvent -> userObservables.next3User())
-                .subscribe(this::displayUser));
+                .flatMap(onClickEvent -> suggestionPresenter.getNextThreeUsers(search.getText().toString()))
+                .subscribe(this::ShowAnotherUser));
+        //show 1 more user
         subscriptionManager.addSubscription(clicks(next)
                 .debounce(250, TimeUnit.MILLISECONDS)
-                .flatMap(onClickEvent -> userObservables.nextUser())
-                .subscribe(this::displayUser));
+                .flatMap(onClickEvent -> suggestionPresenter.nextUser(search.getText().toString()))
+                .subscribe(this::ShowAnotherUser));
     }
 
 
-    public void displayUser(User user) {
-        createNewUserCard(user);
-    }
-
-
-    private void createNewUserCard(User user) {
+    private void ShowAnotherUser(User user) {
         UserCard userCard = (UserCard) inflate(getContext(), R.layout.user_card, null);
         bindUserData(user, userCard);
         initCloseButton(userCard);
@@ -116,27 +111,23 @@ public class SuggestionsBox extends ScrollView {
                 .into((ImageView) userCard.findViewById(R.id.avatar));
         cardsLayout.addView(userCard, 0);
         animHelper.showCard(userCard);
-
     }
 
-    private void initCloseButton(UserCard oldCard) {
-        subscriptionManager.addSubscription(clicks(oldCard.findViewById(R.id.close))
-                .flatMap((OnClickEvent onClickEvent) -> userObservables.nextUser())
-                .subscribe(newUser -> {
-                    cardsLayout.removeView(oldCard);
-                }));
+    private void initCloseButton(UserCard card) {
+        subscriptionManager.addSubscription(clicks(card.findViewById(R.id.close))
+                .subscribe(clickEvent -> cardsLayout.removeView(card)));
     }
 
     //onRotate, make sure we start at same user index that we left off
     @Override
     public Parcelable onSaveInstanceState() {
-        index = userObservables.getIndex();
+        index = suggestionPresenter.getIndex();
         return Icepick.saveInstanceState(this, super.onSaveInstanceState());
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
         super.onRestoreInstanceState(Icepick.restoreInstanceState(this, state));
-        userObservables.setIndex(index);
+        suggestionPresenter.setIndex(index);
     }
 }
