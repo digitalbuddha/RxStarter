@@ -9,9 +9,10 @@ import com.rx.demo.ui.activity.DemoBaseActivity;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import rx.Observable;
-
+@Singleton
 public class SuggestionPresenter {
     @Inject
     public UserCommander userCommander;
