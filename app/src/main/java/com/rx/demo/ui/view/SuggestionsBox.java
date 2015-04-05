@@ -99,6 +99,7 @@ public class SuggestionsBox extends ScrollView {
 
     private void ShowAnotherUser(User user) {
         UserCard userCard = (UserCard) inflate(getContext(), R.layout.user_card, null);
+        //TODO move binidng to within use card class
         bindUserData(user, userCard);
         initCloseButton(userCard);
     }
