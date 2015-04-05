@@ -12,13 +12,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class UserCommander extends RxCommander<UserRequest, UserResponse> {
-
     @Inject
     Github api;
-
-    public UserCommander() {
-        super();
-    }
 
     @Override
     public UserResponse load(UserRequest request) throws Exception {
