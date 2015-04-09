@@ -18,10 +18,9 @@ package com.rx.demo.ui.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.rx.demo.DemoApplication;
-import com.rx.demo.dagger.ActivityModule;
+import com.rx.demo.module.ActivityModule;
 import com.rx.demo.util.SubscriptionManager;
 
 import java.util.Arrays;
@@ -45,7 +44,6 @@ public abstract class DemoBaseActivity extends FragmentActivity {
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
         Icepick.restoreInstanceState(this, savedInstanceState);
-
     }
 
     @Override
@@ -62,20 +60,11 @@ public abstract class DemoBaseActivity extends FragmentActivity {
         super.onDestroy();
     }
 
-    public void displayError(Throwable throwable) {
-         Toast.makeText(this, throwable.toString(), Toast.LENGTH_SHORT).show();
-    }
-
     protected List<Object> getModules() {
         return Arrays.<Object> asList(new ActivityModule(this));
     }
 
-    protected View view(int id) {
-        return findViewById(id);
-    }
-
     public void inject(View view) {
         activityGraph.inject(view);
-
     }
 }

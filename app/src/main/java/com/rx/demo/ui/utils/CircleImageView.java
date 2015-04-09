@@ -17,7 +17,8 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.digitalbuddha.daggerdemo.activitygraphs.R;
+import com.digitalbuddha.rx.demo.R;
+
 
 /**
  * Created by patriciaestridge on 7/31/14.

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger;
+package com.rx.demo.module;
 
 import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.activity.MainActivity;
-import com.rx.demo.ui.view.SuggestionsBox;
+import com.rx.demo.ui.view.ImageSearchView;
 
 import javax.inject.Singleton;
 
@@ -25,12 +25,9 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module(
-        injects = {
-                MainActivity.class, SuggestionsBox.class
-        },
+        injects = { MainActivity.class, ImageSearchView.class},
         addsTo = AndroidModule.class,
-        library = true
-)
+        library = true)
 public class ActivityModule {
     private final DemoBaseActivity activity;
 
@@ -40,7 +37,7 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    DemoBaseActivity provideActivityContext() {
+    DemoBaseActivity provideActivity() {
         return activity;
     }
 }

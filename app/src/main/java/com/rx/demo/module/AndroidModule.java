@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.dagger;
+package com.rx.demo.module;
 
-import com.rx.demo.DemoApplication;
-import com.rx.demo.commander.UserCommander;
-import com.rx.demo.rest.Github;
+import com.rx.demo.commander.ImagesStore;
+import com.rx.demo.rest.ImagesApi;
 
 import javax.inject.Singleton;
 
@@ -26,26 +25,22 @@ import dagger.Provides;
 import retrofit.RestAdapter;
 
 @Module(library = true,
-        injects = {UserCommander.class
-        })
+        injects = {ImagesStore.class})
 public class AndroidModule {
-    DemoApplication application;
 
-    public AndroidModule(DemoApplication application) {
-        this.application = application;
-    }
+    public AndroidModule() {}
 
     @Provides
     @Singleton
     RestAdapter provideRestAdapter() {
         return new RestAdapter.Builder()
-                .setEndpoint("https://api.github.com")
+                .setEndpoint("https://ajax.googleapis.com/ajax/services/search")
                 .build();
     }
 
     @Provides
     @Singleton
-    Github provideGithub(RestAdapter restAdapter) {
-        return restAdapter.create(Github.class);
+    ImagesApi provideImageApi(RestAdapter restAdapter) {
+        return restAdapter.create(ImagesApi.class);
     }
 }

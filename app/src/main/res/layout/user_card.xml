@@ -3,18 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_weight="1"
-
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:background="@drawable/white_with_border"
     android:padding="@dimen/activity_vertical_margin"
     android:layout_margin="@dimen/activity_vertical_margin"
-    tools:showIn="@layout/suggestions_layout">
-
-    <com.rx.demo.ui.utils.CircleImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+   >
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@drawable/profile"
         app:border_color="@color/bg_gray"
         app:border_width="1dp"
@@ -22,28 +20,12 @@
 
     <TextView
         android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_toRightOf="@+id/avatar"
+        android:layout_below="@+id/avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name"
         android:text=""
         android:textColor="@color/black_gray"
         android:textSize="20sp"
-        android:layout_centerVertical="true" />
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:id="@+id/followers1"-->
-    <!--android:text="HTTP://sample" />-->
-
-    <ImageButton
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/close"
-        android:background="@android:color/transparent"
-        android:src="@drawable/close"
-        android:scaleType="centerCrop"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true" />
 </com.rx.demo.ui.view.UserCard>

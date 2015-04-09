@@ -17,7 +17,7 @@ package com.rx.demo;
 
 import android.app.Application;
 
-import com.rx.demo.dagger.AndroidModule;
+import com.rx.demo.module.AndroidModule;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,6 @@ public class DemoApplication extends Application {
         return applicationGraph;
     }
 
-
     ObjectGraph applicationGraph;
 
     @Override
@@ -39,6 +38,6 @@ public class DemoApplication extends Application {
     }
 
     protected List<Object> getModules() {
-        return Arrays.<Object>asList(new AndroidModule(this));
+        return Arrays.asList(new AndroidModule());
     }
 }
