@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.digitalbuddha.rx.demo.R;
 import com.rx.demo.model.Result;
@@ -31,9 +30,6 @@ public class UserCard extends RelativeLayout {
     }
 
     public void bindUserData(Result image, UserCard userCard) {
-        TextView nameView = (TextView) userCard.findViewById(R.id.name);
-        nameView.setText(image.getTitle());
-
         Picasso.with(getContext())
                 .load(image.getUnescapedUrl())
                 .fit()

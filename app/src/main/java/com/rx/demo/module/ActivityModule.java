@@ -15,6 +15,8 @@
  */
 package com.rx.demo.module;
 
+import android.view.LayoutInflater;
+
 import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.activity.MainActivity;
 import com.rx.demo.ui.view.ImageSearchView;
@@ -39,5 +41,12 @@ public class ActivityModule {
     @Singleton
     DemoBaseActivity provideActivity() {
         return activity;
+    }
+
+    @Provides
+    @Singleton
+    LayoutInflater provideLayoutInflater()
+    {
+        return activity.getLayoutInflater();
     }
 }

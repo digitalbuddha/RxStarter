@@ -60,4 +60,18 @@ public class ImageResponse {
     public void setResponseStatus(Integer responseStatus) {
         this.responseStatus = responseStatus;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ImageResponse)) return false;
+
+        ImageResponse that = (ImageResponse) o;
+
+        if (!responseData.equals(that.responseData)) return false;
+        if (!responseDetails.equals(that.responseDetails)) return false;
+        if (!responseStatus.equals(that.responseStatus)) return false;
+
+        return true;
+    }
 }

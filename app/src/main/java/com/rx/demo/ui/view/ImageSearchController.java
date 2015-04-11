@@ -2,8 +2,8 @@ package com.rx.demo.ui.view;
 
 import android.graphics.Rect;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.rx.demo.commander.ImagesStore;
 import com.rx.demo.model.ImageRequest;
@@ -11,21 +11,22 @@ import com.rx.demo.model.ImageResponse;
 import com.rx.demo.model.Result;
 import com.rx.demo.util.SubscriptionManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.android.widget.WidgetObservable;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
-@Singleton
 public class ImageSearchController {
-    private final Queue<Result> qe = new LinkedBlockingQueue<>(100);
+    private final Queue<Result> qe = new ConcurrentLinkedQueue<>();
 
     @Inject
     ImagesStore store;
@@ -33,56 +34,120 @@ public class ImageSearchController {
     @Inject
     SubscriptionManager subscriptions;
 
+    private ImageSearchView view;
+
+
+    private PublishSubject<Object> rowsNeededObservable = PublishSubject.create();
+
+    public void takeView(ImageSearchView imageSearchView) {
+        view = imageSearchView;
+        initQueue();
+        addOnScrollListener();
+        subscribeToSearchTerm();
+        rowsNeededObservable.debounce(100, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(o -> addRows());
+    }
+
+    private void subscribeToSearchTerm() {
+        rxSearchTerm()
+                .doOnNext(results -> clearCardsLayout())
+                .observeOn(Schedulers.io())
+                .flatMap(s -> firstImages(new ImageRequest(s)))
+                .subscribe();
+    }
+
+    protected void clearCardsLayout() {
+        view.cardsLayout.removeAllViews();
+        clearImageQueue();
+    }
 
     void initQueue() {
         subscriptions.addSubscription(store.onNextObservable()
                 .observeOn(Schedulers.io())
-                .filter(this::notFirstPage)
-                .flatMap(this::imageStream)
-                .doOnError(throwable -> {
-                    Log.e(this.getClass().getSimpleName(), throwable.toString());
-                })
-                .doOnCompleted(() -> {
-
-                }).subscribe(this::addToQueue));
+                .flatMap(this::streamOfImages)
+                .doOnNext(this::addToQueue)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(rowsNeededObservable));
     }
+
+    public void addRows() {
+        if (isLastRowVisible()) {
+            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next row");
+            displayNextRow();
+            displayNextRow();
+        }
+    }
+
 
     void addToQueue(Result t1) {
         getQe().add(t1);
     }
 
-    public boolean isLastCardVisible(ViewGroup cardsLayout) {
+
+    public boolean isLastRowVisible() {
         Rect scrollBounds = new Rect();
-        cardsLayout.getHitRect(scrollBounds);
-        return cardsLayout.getChildAt(cardsLayout.getChildCount() - 1).getLocalVisibleRect(scrollBounds);
+        view.cardsLayout.getHitRect(scrollBounds);
+        View lastRow = view.cardsLayout.getChildAt(view.cardsLayout.getChildCount() - 1);
+        return lastRow == null || lastRow.getLocalVisibleRect(scrollBounds);
     }
 
-    public Observable<String> rxSearchTerm(EditText search) {
-        return WidgetObservable.text(search)
+    public Observable<String> rxSearchTerm() {
+        return WidgetObservable.text(view.getSearchView())
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString())
-                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .filter(searchTerm -> searchTerm.length() > 0);
+                .filter(searchTerm -> searchTerm.length() > 0)
+                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
     }
 
-    Observable<Result> imageStream(ImageResponse imageResponse) {
+    Observable<Result> streamOfImages(ImageResponse imageResponse) {
         return Observable.from(imageResponse.getResponseData().getResults());
     }
-
-    boolean notFirstPage(ImageResponse imageResponse) {
-        Integer currentPageIndex = imageResponse.getResponseData().getCursor().getCurrentPageIndex();
-        return currentPageIndex != 0;
-    }
-
 
     public void clearImageQueue() {
         getQe().clear();
     }
 
-    public Observable<Result> getFirstPage(ImageRequest imageRequest) {
-        return store.getFirstPage(imageRequest);
+    public Observable<ImageResponse> firstImages(ImageRequest imageRequest) {
+        return store.fetchImageResults(imageRequest);
     }
 
     public Queue<Result> getQe() {
         return qe;
+    }
+
+
+    private void addOnScrollListener() {
+        view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            if (isLastRowVisible()) {
+                if (getQe().size() != 0) {
+                    rowsNeededObservable.onNext(new Object());
+                }
+            }
+        });
+    }
+
+
+    protected void displayNextRow() {
+        List<Result> images = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (getQe().size() > 0)
+                images.add(getQe().remove());
+        }
+        view.addRow(images);
+
+    }
+
+
+    public LinearLayout newRow() {
+        LinearLayout row = new LinearLayout(view.getContext());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        row.setLayoutParams(params);
+        return row;
+    }
+
+    public void dropView() {
+        view = null;
+        subscriptions.unsubscribeAll();
     }
 }

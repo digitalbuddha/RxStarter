@@ -22,7 +22,8 @@
             android:textColor="@color/black_gray"
             android:textSize="32dp"
             android:textColorHint="@color/slider_gray"
-            android:hint="Name to Search" />
+            android:hint="Name to Search"
+            android:padding="8dp"/>
 
 
 

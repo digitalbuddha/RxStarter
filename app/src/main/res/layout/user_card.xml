@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_weight="1"
     android:id="@+id/card"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="0dp"
     android:background="@drawable/white_with_border"
     android:padding="@dimen/activity_vertical_margin"
-    android:layout_margin="@dimen/activity_vertical_margin"
-   >
+    android:layout_margin="@dimen/activity_vertical_margin">
+
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -17,15 +17,4 @@
         app:border_color="@color/bg_gray"
         app:border_width="1dp"
         android:id="@+id/avatar" />
-
-    <TextView
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_below="@+id/avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/name"
-        android:text=""
-        android:textColor="@color/black_gray"
-        android:textSize="20sp"
-        android:layout_centerVertical="true" />
 </com.rx.demo.ui.view.UserCard>

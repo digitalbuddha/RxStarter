@@ -15,8 +15,8 @@
  */
 package com.rx.demo.ui.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.rx.demo.DemoApplication;
@@ -34,7 +34,7 @@ import icepick.Icepick;
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
  */
-public abstract class DemoBaseActivity extends FragmentActivity {
+public abstract class DemoBaseActivity extends Activity {
     @Inject
     SubscriptionManager subscriptionManager;
     ObjectGraph activityGraph;
@@ -56,7 +56,6 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     protected void onDestroy() {
         activityGraph = null;
         subscriptionManager.unsubscribeAll();
-
         super.onDestroy();
     }
 
