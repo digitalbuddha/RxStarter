@@ -20,19 +20,23 @@ import rx.android.widget.WidgetObservable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class ImageSearchController {
-    @Inject Queue<Result> qe;
+public class ImageSearchController implements ViewPresenter {
+    @Inject
+    Queue<Result> que;
 
     @Inject
     ImagesStore store;
 
     @Inject
-    SubscriptionManager subscriptions;
+    SubscriptionManager subs;
+
+    @Inject
+    PublishSubject<Object> rowBus;
 
     private ImageSearchView view;
 
-    @Inject PublishSubject<Object> rowBus;
 
+    @Override
     public void takeView(ImageSearchView imageSearchView) {
         view = imageSearchView;
         initQueue();
@@ -46,6 +50,9 @@ public class ImageSearchController {
                 .doOnNext(results -> clearResults())
                 .observeOn(Schedulers.io())
                 .flatMap(s -> firstImages(new ImageRequest(s)))
+                .doOnError(throwable -> {
+                    throw new RuntimeException(throwable);
+                })
                 .subscribe();
     }
 
@@ -55,39 +62,42 @@ public class ImageSearchController {
     }
 
     void initQueue() {
-        subscriptions.addSubscription(store.onNextObservable()
+        subs.addSubscription(store.onNextObservable()
                 .observeOn(Schedulers.io())
+                .filter(imageResponse -> imageResponse.getResponseData()!=null)
                 .flatMap(this::streamOfImages)
                 .doOnNext(this::addToQueue)
                 .observeOn(AndroidSchedulers.mainThread())
+
                 .subscribe(rowBus));
     }
 
-    void addToQueue(Result t1) {
-        qe.add(t1);
+   private void addToQueue(Result t1) {
+        que.add(t1);
     }
 
-    public Observable<String> rxSearchTerm() {
+    private Observable<String> rxSearchTerm() {
         return WidgetObservable.text(view.getSearchView())
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString())
                 .filter(searchTerm -> searchTerm.length() > 0)
-                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
+                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
     }
 
-    Observable<Result> streamOfImages(ImageResponse imageResponse) {
+    private Observable<Result> streamOfImages(ImageResponse imageResponse) {
         return Observable.from(imageResponse.getResponseData().getResults());
     }
 
     public void clearImageQueue() {
-        qe.clear();
+        que.clear();
     }
 
-    public Observable<ImageResponse> firstImages(ImageRequest imageRequest) {
+    private Observable<ImageResponse> firstImages(ImageRequest imageRequest) {
         return store.fetchImageResults(imageRequest);
     }
 
 
     public boolean isLastRowVisible() {
+        if(que.size() == 0) return false;
         Rect scrollBounds = new Rect();
         view.cardsLayout.getHitRect(scrollBounds);
         View lastRow = view.cardsLayout.getChildAt(view.cardsLayout.getChildCount() - 1);
@@ -97,15 +107,16 @@ public class ImageSearchController {
     private void addOnScrollListener() {
         view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
             if (isLastRowVisible()) {
-                if (qe.size() != 0) {
+                if (que.size() != 0) {
                     rowBus.onNext(new Object());
                 }
             }
         });
     }
 
+    @Override
     public void dropView() {
         view = null;
-        subscriptions.unsubscribeAll();
+        subs.unsubscribeAll();
     }
 }

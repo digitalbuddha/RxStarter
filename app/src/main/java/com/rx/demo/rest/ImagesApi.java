@@ -9,7 +9,7 @@ import retrofit.http.Query;
  * Created by MikeN on 8/16/14.
  */
 public interface ImagesApi {
-    @GET("/images?v=1.0")
+    @GET("/images?v=1.0&imgsz=medium")
     ImageResponse getPage(@Query("q") String searchTerm, @Query("start") String offset);
 
 }

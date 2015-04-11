@@ -27,7 +27,12 @@ public class ImagesStore extends RxStore<ImageRequest, ImageResponse> {
 
     public Observable<ImageResponse> fetchImageResults(ImageRequest request) {
         return super.get(request)
-                .doOnNext(imageResponse -> cacheAllPages(imageResponse.getResponseData().getCursor().getPages(), request.getSearchTerm()));
+                .doOnNext(imageResponse ->
+                {
+                    if(imageResponse.getResponseData()!=null)
+                        cacheAllPages(imageResponse.getResponseData().getCursor().getPages(), request.getSearchTerm());
+                }
+                );
     }
 
 

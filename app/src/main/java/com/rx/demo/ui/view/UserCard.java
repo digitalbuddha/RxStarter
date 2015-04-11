@@ -30,9 +30,9 @@ public class UserCard extends RelativeLayout {
     }
 
     public void bindUserData(Result image, UserCard userCard) {
-        Picasso.with(getContext())
-                .load(image.getUnescapedUrl())
-                .fit()
-                .into((ImageView) userCard.findViewById(R.id.avatar));
+           Picasso.with(getContext())
+                   .load(image.getUnescapedUrl())
+                   .into((ImageView) userCard.findViewById(R.id.avatar));
+
     }
 }

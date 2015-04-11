@@ -29,8 +29,6 @@ import rx.subjects.PublishSubject;
 
 
 public class ImageSearchView extends ScrollView {
-    @Inject
-    ImageSearchController controller;
 
     @InjectView(R.id.searchBox)
     EditText search;
@@ -38,15 +36,16 @@ public class ImageSearchView extends ScrollView {
     LinearLayout cardsLayout;
 
     @Inject
+    ImageSearchController controller;
+    @Inject
     Handler handler;
     @Inject
     PublishSubject<Object> rowBus;
-
-    @Inject @RowContainer
-    Provider<LinearLayout> row;
-
     @Inject
-    Queue<Result> qe;
+    @RowContainer
+    Provider<LinearLayout> row;
+    @Inject
+    Queue<Result> que;
 
 
     public ImageSearchView(Context context) {
@@ -66,10 +65,16 @@ public class ImageSearchView extends ScrollView {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.inject(this);
-        rowBus.debounce(100, TimeUnit.MILLISECONDS)
+
+        getNotifiedWhenRowIsNeeded();
+        controller.takeView(this);
+
+    }
+
+    private void getNotifiedWhenRowIsNeeded() {
+        rowBus.debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> addRows());
-        controller.takeView(this);
     }
 
 
@@ -80,8 +85,8 @@ public class ImageSearchView extends ScrollView {
             userCard.bindUserData(image, userCard);
             getLastRow().addView(userCard);
         }
-
-        handler.postDelayed(this::addRows, 16);
+        //putting a delay before drawing rows prevents jankiness with adding views while scrolling
+        handler.postDelayed(this::addRows, 200);
     }
 
     private ViewGroup getLastRow() {
@@ -105,12 +110,11 @@ public class ImageSearchView extends ScrollView {
     protected void displayNextRow() {
         List<Result> images = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            if (qe.size() > 0)
-                images.add(qe.remove());
+            if (que.size() > 0)
+                images.add(que.remove());
         }
-        addRow(images);
+        if(images.size()>0) addRow(images);
     }
-
 
     @Override
     protected void onDetachedFromWindow() {

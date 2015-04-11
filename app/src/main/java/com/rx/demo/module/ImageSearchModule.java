@@ -64,7 +64,7 @@ public class ImageSearchModule {
 
     @Provides
     @Singleton
-    PublishSubject<Object> provideUIBus() {
+    PublishSubject<Object> provideBus() {
         return PublishSubject.create();
     }
 
