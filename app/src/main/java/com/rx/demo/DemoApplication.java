@@ -17,7 +17,7 @@ package com.rx.demo;
 
 import android.app.Application;
 
-import com.rx.demo.module.AndroidModule;
+import com.rx.demo.di.AndroidModule;
 
 import java.util.Arrays;
 import java.util.List;

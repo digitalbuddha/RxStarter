@@ -9,18 +9,18 @@ import com.digitalbuddha.rx.demo.R;
 import com.rx.demo.model.Result;
 import com.squareup.picasso.Picasso;
 
-public class UserCard extends RelativeLayout {
+public class ImageCard extends RelativeLayout {
 
 
-    public UserCard(Context context) {
+    public ImageCard(Context context) {
         this(context, null);
     }
 
-    public UserCard(Context context, AttributeSet attrs) {
+    public ImageCard(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public UserCard(Context context, AttributeSet attrs, int defStyle) {
+    public ImageCard(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -29,10 +29,10 @@ public class UserCard extends RelativeLayout {
         super.onFinishInflate();
     }
 
-    public void bindUserData(Result image, UserCard userCard) {
+    public void bindUserData(Result image, ImageCard imageCard) {
            Picasso.with(getContext())
                    .load(image.getUnescapedUrl())
-                   .into((ImageView) userCard.findViewById(R.id.avatar));
+                   .into((ImageView) imageCard.findViewById(R.id.avatar));
 
     }
 }

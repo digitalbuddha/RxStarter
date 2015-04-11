@@ -12,9 +12,6 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 
-/**
- * Created by Nakhimovich on 3/25/15.
- */
 @Singleton
 public class ImagesStore extends RxStore<ImageRequest, ImageResponse> {
     @Inject

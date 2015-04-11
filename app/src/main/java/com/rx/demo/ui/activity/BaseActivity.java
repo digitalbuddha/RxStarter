@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.rx.demo.DemoApplication;
-import com.rx.demo.module.ImageSearchModule;
+import com.rx.demo.di.ImageSearchModule;
 import com.rx.demo.util.SubscriptionManager;
 
 import java.util.Arrays;
@@ -29,12 +29,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
-import icepick.Icepick;
 
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
  */
-public abstract class DemoBaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
     @Inject
     SubscriptionManager subscriptionManager;
     ObjectGraph activityGraph;
@@ -43,13 +42,11 @@ public abstract class DemoBaseActivity extends Activity {
         super.onCreate (savedInstanceState);
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
     }
 
     @Override

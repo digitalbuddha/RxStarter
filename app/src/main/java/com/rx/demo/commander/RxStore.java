@@ -13,7 +13,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-import static com.rx.demo.util.ObservableUtils.observabler;
+import static rx.Observable.*;
 
 
 //T = request type, V = response type
@@ -38,7 +38,7 @@ public abstract class RxStore<T, V> {
         V cachedValue = getCachedValue(request);
 
         //returning a cached fresh response to prevent operators such as repeat from hitting network more than once.
-        return cachedValue == null ? fresh(request).cache() : observabler(cachedValue);
+        return cachedValue == null ? fresh(request).cache() : just(cachedValue);
     }
 
     boolean isInFlightNetwork(T request) {
@@ -62,7 +62,7 @@ public abstract class RxStore<T, V> {
     }
 
     protected Observable<V> response(final T request) {
-        final Observable<V> response = Observable.create(subscriber -> {
+        final Observable<V> response = create(subscriber -> {
             try {
                 subscriber.onStart();
                 loadResponse(request);

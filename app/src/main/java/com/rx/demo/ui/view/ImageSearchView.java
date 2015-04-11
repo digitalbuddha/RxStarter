@@ -11,8 +11,8 @@ import android.widget.ScrollView;
 
 import com.digitalbuddha.rx.demo.R;
 import com.rx.demo.model.Result;
-import com.rx.demo.module.RowContainer;
-import com.rx.demo.ui.activity.DemoBaseActivity;
+import com.rx.demo.di.RowContainer;
+import com.rx.demo.ui.activity.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class ImageSearchView extends ScrollView {
     LinearLayout cardsLayout;
 
     @Inject
-    ImageSearchController controller;
+    ImageSearchPresenter controller;
     @Inject
     Handler handler;
     @Inject
@@ -58,7 +58,7 @@ public class ImageSearchView extends ScrollView {
 
     public ImageSearchView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        ((DemoBaseActivity) context).inject(this);
+        ((BaseActivity) context).inject(this);
     }
 
     @Override
@@ -81,9 +81,9 @@ public class ImageSearchView extends ScrollView {
     public void addRow(List<Result> images) {
 
         for (Result image : images) {
-            UserCard userCard = (UserCard) inflate(getContext(), R.layout.user_card, null);
-            userCard.bindUserData(image, userCard);
-            getLastRow().addView(userCard);
+            ImageCard imageCard = (ImageCard) inflate(getContext(), R.layout.user_card, null);
+            imageCard.bindUserData(image, imageCard);
+            getLastRow().addView(imageCard);
         }
         //putting a delay before drawing rows prevents jankiness with adding views while scrolling
         handler.postDelayed(this::addRows, 200);

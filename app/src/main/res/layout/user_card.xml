@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.rx.demo.ui.view.UserCard xmlns:app="http://schemas.android.com/apk/res-auto"
+<com.rx.demo.ui.view.ImageCard xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_weight="1"
@@ -17,4 +17,4 @@
         app:border_color="@color/bg_gray"
         app:border_width="1dp"
         android:id="@+id/avatar" />
-</com.rx.demo.ui.view.UserCard>
+</com.rx.demo.ui.view.ImageCard>

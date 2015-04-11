@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.module;
+package com.rx.demo.di;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import com.rx.demo.model.Result;
-import com.rx.demo.ui.activity.DemoBaseActivity;
-import com.rx.demo.ui.activity.MainActivity;
+import com.rx.demo.ui.activity.BaseActivity;
+import com.rx.demo.ui.activity.SearchActivity;
 import com.rx.demo.ui.view.ImageSearchView;
 
 import java.util.Queue;
@@ -34,19 +34,19 @@ import dagger.Provides;
 import rx.subjects.PublishSubject;
 
 @Module(
-        injects = {MainActivity.class, ImageSearchView.class},
+        injects = {SearchActivity.class, ImageSearchView.class},
         addsTo = AndroidModule.class,
         library = true)
 public class ImageSearchModule {
-    private final DemoBaseActivity activity;
+    private final BaseActivity activity;
 
-    public ImageSearchModule(DemoBaseActivity activity) {
+    public ImageSearchModule(BaseActivity activity) {
         this.activity = activity;
     }
 
     @Provides
     @Singleton
-    DemoBaseActivity provideActivity() {
+    BaseActivity provideActivity() {
         return activity;
     }
 

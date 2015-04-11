@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rx.demo.module;
+package com.rx.demo.di;
 
 import com.rx.demo.commander.ImagesStore;
 import com.rx.demo.rest.ImagesApi;

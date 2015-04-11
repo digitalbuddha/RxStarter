@@ -19,7 +19,7 @@ public class SubscriptionManager {
         subscriptions = new ArrayList<>();
     }
 
-    public void addSubscription(Subscription subscription) {
+    public void add(Subscription subscription) {
         subscriptions.add(subscription);
     }
 

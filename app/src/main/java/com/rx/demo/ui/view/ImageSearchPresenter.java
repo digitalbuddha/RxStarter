@@ -20,7 +20,7 @@ import rx.android.widget.WidgetObservable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class ImageSearchController implements ViewPresenter {
+public class ImageSearchPresenter implements IViewPresenter {
     @Inject
     Queue<Result> que;
 
@@ -62,9 +62,9 @@ public class ImageSearchController implements ViewPresenter {
     }
 
     void initQueue() {
-        subs.addSubscription(store.onNextObservable()
+        subs.add(store.onNextObservable()
                 .observeOn(Schedulers.io())
-                .filter(imageResponse -> imageResponse.getResponseData()!=null)
+                .filter(imageResponse -> imageResponse.getResponseData() != null)
                 .flatMap(this::streamOfImages)
                 .doOnNext(this::addToQueue)
                 .observeOn(AndroidSchedulers.mainThread())
