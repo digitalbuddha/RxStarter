@@ -15,25 +15,32 @@
  */
 package com.rx.demo.module;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 
+import com.rx.demo.model.Result;
 import com.rx.demo.ui.activity.DemoBaseActivity;
 import com.rx.demo.ui.activity.MainActivity;
 import com.rx.demo.ui.view.ImageSearchView;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.subjects.PublishSubject;
 
 @Module(
-        injects = { MainActivity.class, ImageSearchView.class},
+        injects = {MainActivity.class, ImageSearchView.class},
         addsTo = AndroidModule.class,
         library = true)
-public class ActivityModule {
+public class ImageSearchModule {
     private final DemoBaseActivity activity;
 
-    public ActivityModule(DemoBaseActivity activity) {
+    public ImageSearchModule(DemoBaseActivity activity) {
         this.activity = activity;
     }
 
@@ -45,8 +52,37 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    LayoutInflater provideLayoutInflater()
-    {
+    LayoutInflater provideLayoutInflater() {
         return activity.getLayoutInflater();
     }
+
+    @Provides
+    @Singleton
+    Handler provideHandler() {
+        return new Handler();
+    }
+
+    @Provides
+    @Singleton
+    PublishSubject<Object> provideUIBus() {
+        return PublishSubject.create();
+    }
+
+    @Provides
+    @RowContainer
+    LinearLayout provideImageContainer() {
+        LinearLayout row = new LinearLayout(activity);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        row.setLayoutParams(params);
+        return row;
+    }
+
+    @Provides
+    @Singleton
+    Queue<Result> providesImageQueue()
+    {
+       return new ConcurrentLinkedQueue<>();
+    }
+
 }

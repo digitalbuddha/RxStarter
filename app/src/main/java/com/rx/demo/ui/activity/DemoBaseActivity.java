@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.rx.demo.DemoApplication;
-import com.rx.demo.module.ActivityModule;
+import com.rx.demo.module.ImageSearchModule;
 import com.rx.demo.util.SubscriptionManager;
 
 import java.util.Arrays;
@@ -60,7 +60,7 @@ public abstract class DemoBaseActivity extends Activity {
     }
 
     protected List<Object> getModules() {
-        return Arrays.<Object> asList(new ActivityModule(this));
+        return Arrays.<Object> asList(new ImageSearchModule(this));
     }
 
     public void inject(View view) {
