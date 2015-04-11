@@ -10,13 +10,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.digitalbuddha.rx.demo.R;
-import com.rx.demo.model.Result;
 import com.rx.demo.di.RowContainer;
+import com.rx.demo.model.Result;
 import com.rx.demo.ui.activity.BaseActivity;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -29,23 +27,19 @@ import rx.subjects.PublishSubject;
 
 
 public class ImageSearchView extends ScrollView {
-
     @InjectView(R.id.searchBox)
     EditText search;
     @InjectView(R.id.cards)
     LinearLayout cardsLayout;
-
     @Inject
     ImageSearchPresenter controller;
     @Inject
     Handler handler;
     @Inject
-    PublishSubject<Object> rowBus;
+    PublishSubject<Object> rowRequestStream;
     @Inject
     @RowContainer
     Provider<LinearLayout> row;
-    @Inject
-    Queue<Result> que;
 
 
     public ImageSearchView(Context context) {
@@ -66,18 +60,53 @@ public class ImageSearchView extends ScrollView {
         super.onFinishInflate();
         ButterKnife.inject(this);
 
-        getNotifiedWhenRowIsNeeded();
+        subscribeToPresenter();
         controller.takeView(this);
 
     }
 
-    private void getNotifiedWhenRowIsNeeded() {
-        rowBus.debounce(500, TimeUnit.MILLISECONDS)
+    /**
+     * add new rows to the row container based on requests
+     * emitted by presenter
+     * NOTE:  if a burst of requests, will wait 500ms
+     * after the last request  to start adding rows
+     */
+    private void subscribeToPresenter() {
+        rowRequestStream.debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> addRows());
     }
 
+    /**
+     * if last row of images is visible, create 2 more rows
+     */
+    public void addRows() {
+        if (controller.isLastRowVisible()) {
+            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
+            displayNextRow();
+            displayNextRow();
+        }
+    }
 
+    /**
+     * gets images from queue and binds to newly created views
+     */
+    protected void displayNextRow() {
+        List<Result> images = controller.getImageFromQueue();
+        if (images.size() > 0) addRow(images);
+    }
+
+
+    /**
+     * Inflate a new row
+     * Bind data to row
+     * Add row to container
+     * <p>
+     * Note:putting a delay before drawing rows
+     * prevents jankiness with adding views while scrolling
+     *
+     * @param images image data
+     */
     public void addRow(List<Result> images) {
 
         for (Result image : images) {
@@ -85,10 +114,15 @@ public class ImageSearchView extends ScrollView {
             imageCard.bindUserData(image, imageCard);
             getLastRow().addView(imageCard);
         }
-        //putting a delay before drawing rows prevents jankiness with adding views while scrolling
         handler.postDelayed(this::addRows, 200);
     }
 
+    /**
+     * if less than 3 images in last row return it
+     * else return a newly added linear layout
+     *
+     * @return ViewGroup with 0-2 images
+     */
     private ViewGroup getLastRow() {
         ViewGroup lastRow = (ViewGroup) cardsLayout.getChildAt(cardsLayout.getChildCount() - 1);
         if (lastRow == null || lastRow.getChildCount() == 3) {
@@ -98,24 +132,10 @@ public class ImageSearchView extends ScrollView {
         return lastRow;
     }
 
-    public void addRows() {
-        if (controller.isLastRowVisible()) {
-            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
-            displayNextRow();
-            displayNextRow();
-        }
-    }
 
-
-    protected void displayNextRow() {
-        List<Result> images = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            if (que.size() > 0)
-                images.add(que.remove());
-        }
-        if(images.size()>0) addRow(images);
-    }
-
+    /**
+     * detach from presenter
+     */
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
