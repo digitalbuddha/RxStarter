@@ -17,11 +17,10 @@ package com.rx.demo.di;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
 
 import com.rx.demo.model.Result;
-import com.rx.demo.ui.activity.BaseActivity;
 import com.rx.demo.ui.activity.SearchActivity;
+import com.rx.demo.ui.view.HistoryView;
 import com.rx.demo.ui.view.ImageSearchView;
 
 import java.util.Queue;
@@ -34,19 +33,21 @@ import dagger.Provides;
 import rx.subjects.PublishSubject;
 
 @Module(
-        injects = {SearchActivity.class, ImageSearchView.class},
+        injects = {SearchActivity.class,
+                ImageSearchView.class,
+                HistoryView.class},
         addsTo = AndroidModule.class,
         library = true)
 public class ImageSearchModule {
-    private final BaseActivity activity;
+    private final SearchActivity activity;
 
-    public ImageSearchModule(BaseActivity activity) {
+    public ImageSearchModule(SearchActivity activity) {
         this.activity = activity;
     }
 
     @Provides
     @Singleton
-    BaseActivity provideActivity() {
+    SearchActivity provideActivity() {
         return activity;
     }
 
@@ -64,25 +65,23 @@ public class ImageSearchModule {
 
     @Provides
     @Singleton
-    PublishSubject<Object> provideBus() {
+   @ImageViewBus
+    PublishSubject<Object> provideSearchViewBus() {
         return PublishSubject.create();
     }
 
     @Provides
-    @RowContainer
-    LinearLayout provideImageContainer() {
-        LinearLayout row = new LinearLayout(activity);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        row.setLayoutParams(params);
-        return row;
+    @Singleton
+    @HistoryViewBus
+    PublishSubject<String> provideHistoryBus() {
+        return PublishSubject.create();
     }
+
 
     @Provides
     @Singleton
-    Queue<Result> providesImageQueue()
-    {
-       return new ConcurrentLinkedQueue<>();
+    Queue<Result> providesImageQueue() {
+        return new ConcurrentLinkedQueue<>();
     }
 
 }

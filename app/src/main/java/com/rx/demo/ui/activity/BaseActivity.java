@@ -20,10 +20,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.rx.demo.DemoApplication;
-import com.rx.demo.di.ImageSearchModule;
 import com.rx.demo.util.SubscriptionManager;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,6 +42,8 @@ public abstract class BaseActivity extends Activity {
         activityGraph.inject(this);
     }
 
+    protected abstract List<Object> getModules();
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -56,9 +56,7 @@ public abstract class BaseActivity extends Activity {
         super.onDestroy();
     }
 
-    protected List<Object> getModules() {
-        return Arrays.<Object> asList(new ImageSearchModule(this));
-    }
+
 
     public void inject(View view) {
         activityGraph.inject(view);

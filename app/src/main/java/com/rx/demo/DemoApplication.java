@@ -17,6 +17,7 @@ package com.rx.demo;
 
 import android.app.Application;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.rx.demo.di.AndroidModule;
 
 import java.util.Arrays;
@@ -35,6 +36,8 @@ public class DemoApplication extends Application {
     public void onCreate() {
         super.onCreate();
         applicationGraph = ObjectGraph.create(getModules().toArray());
+        Fresco.initialize(this);
+
     }
 
     protected List<Object> getModules() {
