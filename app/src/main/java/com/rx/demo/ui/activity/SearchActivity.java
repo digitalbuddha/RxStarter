@@ -71,7 +71,7 @@ public class SearchActivity extends BaseActivity {
     public void onBackPressed() {
         if (flipper.getDisplayedChild() != SEARCH_VIEW_POSITION) {
             historyButton.setVisibility(View.VISIBLE);
-            flipper.showNext();
+            AnimationFactory.flipTransition(flipper, AnimationFactory.FlipDirection.LEFT_RIGHT);
         } else {
             super.onBackPressed();
         }
