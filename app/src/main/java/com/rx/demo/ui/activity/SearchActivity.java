@@ -1,35 +1,37 @@
 package com.rx.demo.ui.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ViewFlipper;
 
 import com.digitalbuddha.rx.demo.R;
 import com.rx.demo.di.ImageSearchModule;
-import com.rx.demo.ui.animation.FlipAnimation;
+import com.rx.demo.ui.animation.AnimationFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Inject;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 import static butterknife.ButterKnife.findById;
 
 
 public class SearchActivity extends BaseActivity {
-    private boolean showingBack;
 
-    @Inject Handler handler;
-    private FlipAnimation flipAnimation;
-    private FlipAnimation backFlip;
-    private View left;
-    private View right;
+
+    public static final int SEARCH_VIEW_POSITION = 0;
+    @InjectView(R.id.container)
+    ViewFlipper flipper;
+    @InjectView(R.id.history)
+    View historyButton;
 
     /**
      * inflate search and history view and add the to container
      * set click listener for history button
+     *
      * @param savedInstanceState
      */
     @Override
@@ -37,59 +39,41 @@ public class SearchActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-
         setContentView(R.layout.activity_layout);
-        ViewGroup parent = (ViewGroup) getLayoutInflater().inflate(R.layout.history_view, findById(this, R.id.container));
-        left = parent.getChildAt(0);
-        getLayoutInflater().inflate(R.layout.search_view, findById(this, R.id.container));
-        right = parent.getChildAt(1);
-        findViewById(R.id.flip).setOnClickListener(v -> {
-            flipViews();
-        });
-
+        ButterKnife.inject(this);
+        flipper = findById(this, R.id.container);
+        getLayoutInflater().inflate(R.layout.search_view, flipper);
+        getLayoutInflater().inflate(R.layout.history_view, flipper);
     }
 
-    public void flipViews() {
-        flipAnimation = new FlipAnimation(right, left);
-        backFlip = new FlipAnimation(right,left);
-        handler.removeCallbacks(rotate);
-        handler.postDelayed(rotate, 100);
+    @OnClick(R.id.history)
+    public void historyButtonClicked() {
+        flipViews();
+
     }
-
-    private Runnable rotate = new Runnable() {
-
-        @Override
-        public void run() {
-            if (!showingBack) {
-                left.startAnimation(flipAnimation);
-                right.startAnimation(flipAnimation);
-                findViewById(R.id.flip).setVisibility(View.INVISIBLE);
-                showingBack = true;
-            } else {
-                findViewById(R.id.flip).setVisibility(View.VISIBLE);
-                showingBack = false;
-                backFlip.reverse();
-                left.startAnimation(backFlip);
-                right.startAnimation(backFlip);
-            }
-        }
-    };
 
     protected List<Object> getModules() {
         return Arrays.asList(new ImageSearchModule(this));
     }
 
+    public void flipViews() {
+        if (flipper.getDisplayedChild() == SEARCH_VIEW_POSITION) {
+            historyButton.setVisibility(View.INVISIBLE);
+            AnimationFactory.flipTransition(flipper, AnimationFactory.FlipDirection.LEFT_RIGHT);
+
+        } else {
+            historyButton.setVisibility(View.VISIBLE);
+            AnimationFactory.flipTransition(flipper, AnimationFactory.FlipDirection.LEFT_RIGHT);
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        if(showingBack)
-        {
-            flipViews();
-        }
-        else
-        {
+        if (flipper.getDisplayedChild() != SEARCH_VIEW_POSITION) {
+            historyButton.setVisibility(View.VISIBLE);
+            flipper.showNext();
+        } else {
             super.onBackPressed();
-
         }
     }
 }
