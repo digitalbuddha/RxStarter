@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.digitalbuddha.daggerdemo.activitygraphs"
+    package="com.digitalbuddha.rx.demo"
     android:versionCode="1"
-    android:versionName="1.0.0" >
+    android:versionName="1.0.0"
+    >
 
     <uses-sdk
         android:minSdkVersion="4"
@@ -25,8 +26,8 @@
         <meta-data android:name="AA_DB_NAME" android:value="sample.db" />
         <meta-data android:name="AA_DB_VERSION" android:value="1" />
 
-        <activity
-            android:name="com.rx.demo.ui.activity.MainActivity"
+        <activity android:windowSoftInputMode="adjustResize" android:configChanges="orientation|keyboardHidden"
+            android:name="com.rx.demo.ui.activity.SearchActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

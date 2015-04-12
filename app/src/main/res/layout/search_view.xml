@@ -1,0 +1,40 @@
+<com.rx.demo.ui.view.SearchView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_gray"
+    android:id="@+id/suggestionBox">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/searchBox"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/white_with_border"
+            android:textColor="@color/black_gray"
+            android:textSize="32dp"
+            android:textColorHint="@color/slider_gray"
+            android:hint="Name to Search"
+            android:padding="8dp"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/cards"
+            android:orientation="vertical">
+        </LinearLayout>
+
+
+    </LinearLayout>
+</com.rx.demo.ui.view.SearchView>
+

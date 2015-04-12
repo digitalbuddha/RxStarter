@@ -15,67 +15,55 @@
  */
 package com.rx.demo.ui.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.rx.demo.DemoApplication;
-import com.rx.demo.dagger.ActivityModule;
 import com.rx.demo.util.SubscriptionManager;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
-import icepick.Icepick;
 
 /**
  * Base activity which sets up a per-activity object graph and performs injection.
  */
-public abstract class DemoBaseActivity extends FragmentActivity {
+public abstract class BaseActivity extends Activity {
     @Inject
     SubscriptionManager subscriptionManager;
     ObjectGraph activityGraph;
+
+    /**
+     * creates a activity scoped object graph which adds to global graph
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
         activityGraph = ((DemoApplication)getApplication()).getApplicationGraph().plus(getModules().toArray());
         activityGraph.inject(this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
-
     }
+
+    protected abstract List<Object> getModules();
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
     }
 
     @Override
     protected void onDestroy() {
         activityGraph = null;
         subscriptionManager.unsubscribeAll();
-
         super.onDestroy();
     }
 
-    public void displayError(Throwable throwable) {
-         Toast.makeText(this, throwable.toString(), Toast.LENGTH_SHORT).show();
-    }
 
-    protected List<Object> getModules() {
-        return Arrays.<Object> asList(new ActivityModule(this));
-    }
-
-    protected View view(int id) {
-        return findViewById(id);
-    }
 
     public void inject(View view) {
         activityGraph.inject(view);
-
     }
 }
