@@ -1,4 +1,4 @@
-package com.rx.demo.di;
+package com.rx.demo.di.annotation;
 
 import java.lang.annotation.Retention;
 

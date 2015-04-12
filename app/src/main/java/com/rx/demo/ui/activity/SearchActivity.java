@@ -33,7 +33,7 @@ public class SearchActivity extends BaseActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 
-        setContentView(R.layout.main_view);
+        setContentView(R.layout.activity_layout);
         ViewGroup parent = (ViewGroup) getLayoutInflater().inflate(R.layout.history_view, findById(this, R.id.container));
         left = parent.getChildAt(0);
         getLayoutInflater().inflate(R.layout.search_view, findById(this, R.id.container));

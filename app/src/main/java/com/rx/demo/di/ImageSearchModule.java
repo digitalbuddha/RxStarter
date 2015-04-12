@@ -18,6 +18,8 @@ package com.rx.demo.di;
 import android.os.Handler;
 import android.view.LayoutInflater;
 
+import com.rx.demo.di.annotation.HistoryViewBus;
+import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.Result;
 import com.rx.demo.ui.activity.SearchActivity;
 import com.rx.demo.ui.view.HistoryView;

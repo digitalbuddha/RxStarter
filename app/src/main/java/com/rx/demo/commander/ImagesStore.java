@@ -37,7 +37,7 @@ public class ImagesStore extends RxStore<ImageRequest, ImageResponse> {
     private void cacheAllPages(List<Page> pages, String searchTerm) {
         //first page already cached
         for (int i = 1; i < pages.size(); i++) {
-            updateCache(new ImageRequest(searchTerm, pages.get(i).getStart()));
+            cacheRequest(new ImageRequest(searchTerm, pages.get(i).getStart()));
         }
     }
 }

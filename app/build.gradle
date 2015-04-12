@@ -46,5 +46,6 @@ dependencies
             compile 'com.squareup.picasso:picasso:2.5.0'
             compile 'com.jakewharton:butterknife:6.1.0'
             compile 'com.facebook.fresco:fresco:0.2.0+'
-
+            compile 'frankiesardo:icepick:3+'
+            provided 'frankiesardo:icepick-processor:3+'
         }

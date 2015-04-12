@@ -1,12 +1,12 @@
 package com.rx.demo.ui.view.presenter;
 
-import com.rx.demo.ui.view.ImageSearchView;
+import android.view.View;
 
 /**
  * Created by Nakhimovich on 4/10/15.
  */
 public interface IViewPresenter {
-    void takeView(ImageSearchView imageSearchView);
+    void takeView(View view);
 
     void dropView();
 }

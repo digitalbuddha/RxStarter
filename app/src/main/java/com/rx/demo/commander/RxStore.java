@@ -38,7 +38,8 @@ public abstract class RxStore<T, V> {
         V cachedValue = getCachedValue(request);
 
         //returning a cached fresh response to prevent operators such as repeat from hitting network more than once.
-        return cachedValue == null ? fresh(request).cache() : just(cachedValue);
+        Observable<V> result = cachedValue == null ? fresh(request).cache() : just(cachedValue);
+        return result.doOnNext(updateObservable::onNext);
     }
 
     boolean isInFlightNetwork(T request) {
@@ -56,9 +57,9 @@ public abstract class RxStore<T, V> {
         return gson.toJson(request);
     }
 
-    protected void updateCache(T request)
+    protected void cacheRequest(T request)
     {
-        fresh(request).subscribeOn(Schedulers.io()).subscribe();
+        get(request).subscribeOn(Schedulers.io()).subscribe();
     }
 
     protected Observable<V> response(final T request) {
@@ -80,14 +81,20 @@ public abstract class RxStore<T, V> {
     }
 
     private V getCachedValue(T request) {
-        return cachedResponses.get(json(request));
+        V v = cachedResponses.get(json(request));
+        if(v!=null)
+        {
+            Log.e(this.getClass().getName(),"rx cache get");
+
+        }
+        return v;
     }
 
     protected Observable<V> registerResponse(final T request, final Observable<V> response) {
         return response
                 .doOnSubscribe(() -> inFlightRequests.put(json(request), response))
-                .doOnCompleted(() -> inFlightRequests.remove(json(request)))
-                .doOnNext(updateObservable::onNext);
+                .doOnCompleted(() -> inFlightRequests.remove(json(request)));
+
     }
 
 

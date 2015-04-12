@@ -5,8 +5,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.rx.demo.commander.ImagesStore;
-import com.rx.demo.di.HistoryViewBus;
-import com.rx.demo.di.ImageViewBus;
+import com.rx.demo.di.annotation.HistoryViewBus;
+import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.ImageRequest;
 import com.rx.demo.model.ImageResponse;
 import com.rx.demo.model.Result;
@@ -24,9 +24,9 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.android.widget.WidgetObservable;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+
 @Singleton
 public class ImageSearchPresenter implements IViewPresenter {
     @Inject
@@ -46,46 +46,32 @@ public class ImageSearchPresenter implements IViewPresenter {
     @HistoryViewBus
     PublishSubject<String> historyViewBus;
 
-
-
-
     private ImageSearchView view;
-    private Action1<String> historyObserver;
 
     /**
      * Binds to view
      * Initializes subscriptions
      * Adds an on Scroll listner to load more images
      *
-     * @param imageSearchView view with search term and image results
+     * @param view view with search term and image results
      */
     @Override
-    public void takeView(ImageSearchView imageSearchView) {
-        view = imageSearchView;
+    public void takeView(View view) {
+        if (view == null) return;
+        this.view = (ImageSearchView) view;
         initBus();
         subscribeToSearchTerm();
         addOnScrollListener();
     }
 
-    /**
-     * add new rows to the row container based on requests
-     * emitted by imageViewBus
-     *
-     * NOTE:  if a burst of requests, will wait 500ms
-     * after the last request  to start adding rows
-     */
-    private void subscribeToRequestStream() {
-
-    }
 
     /**
-     *
      * sets up request stream
-     *
+     * <p>
      * images become available -> emit to imageViewBus
-     *
+     * <p>
      * on emit to imageViewBus -> try to add new rows
-     *
+     * <p>
      * NOTE: imageViewBus drops events followed by another event within 500ms
      */
     void initBus() {
@@ -116,7 +102,6 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
 
-
     /**
      * gets images from queue and binds to newly created views
      */
@@ -126,7 +111,10 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
     /**
-     *
+     * when a new search occurs
+     * clear results and queue
+     * emit new search terms to history view bus
+     * kick off request of images
      */
     private void subscribeToSearchTerm() {
         rxSearchTerm()
@@ -138,9 +126,7 @@ public class ImageSearchPresenter implements IViewPresenter {
                     throw new RuntimeException(throwable);
                 })
                 .subscribe();
-
     }
-
 
 
     /**
@@ -152,7 +138,6 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
 
-
     private void addToQueue(Result t1) {
         que.add(t1);
     }
@@ -162,6 +147,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      * transforms the onTextChange event into the search String
      * filters any blank searches
      * emits only the last emitted value when no search for 1 second
+     *
      * @return Observable containing the search term
      */
     public Observable<String> rxSearchTerm() {
@@ -173,6 +159,7 @@ public class ImageSearchPresenter implements IViewPresenter {
 
     /**
      * creates observable that emits stream of images from a single image response
+     *
      * @param imageResponse
      * @return Observable that emit individual image results
      */
@@ -187,6 +174,7 @@ public class ImageSearchPresenter implements IViewPresenter {
     /**
      * kicks of network request for search term
      * as well as caching all addl pages
+     *
      * @param imageRequest search term
      * @return Observable Image response containing first page of image results
      */
@@ -196,6 +184,7 @@ public class ImageSearchPresenter implements IViewPresenter {
 
     /**
      * determines whether the last row of images is visible on the screen
+     *
      * @return boolean
      */
     public boolean isLastRowVisible() {
@@ -220,7 +209,6 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
     /**
-     *
      * @return 3 images from queue
      */
     public List<Result> getImageFromQueue() {
@@ -241,18 +229,12 @@ public class ImageSearchPresenter implements IViewPresenter {
         subs.unsubscribeAll();
     }
 
-
-
     public void changeSearchTerm(String s) {
         view.updateSearchView(s);
     }
-
 
     public PublishSubject<String> getHistoryViewBus() {
         return historyViewBus;
     }
 
-    public void setHistoryViewBus(PublishSubject<String> historyViewBus) {
-        this.historyViewBus = historyViewBus;
-    }
 }
