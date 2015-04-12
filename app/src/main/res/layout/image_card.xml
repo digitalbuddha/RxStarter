@@ -12,7 +12,7 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     >
 
-    <com.rx.demo.ui.view.SimpleImageView
+    <com.rx.demo.ui.view.SquareDraweeView
         android:id="@+id/avatar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

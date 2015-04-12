@@ -10,6 +10,11 @@ import rx.Subscription;
 /**
  * Created by Nakhimovich on 3/28/15.
  */
+
+/**
+ * manages observable subscriptions
+ * unsubscribeAll is normally called from onDestroy of an Activity
+ */
 @Singleton
 public class SubscriptionManager {
     private ArrayList<Subscription> subscriptions;
@@ -18,6 +23,7 @@ public class SubscriptionManager {
     public SubscriptionManager() {
         subscriptions = new ArrayList<>();
     }
+
 
     public void add(Subscription subscription) {
         subscriptions.add(subscription);

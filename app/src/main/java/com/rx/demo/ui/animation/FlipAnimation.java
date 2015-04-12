@@ -1,4 +1,4 @@
-package com.rx.demo.ui.activity;
+package com.rx.demo.ui.animation;
 
 import android.graphics.Camera;
 import android.graphics.Matrix;

@@ -5,18 +5,18 @@ import android.util.AttributeSet;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
-public class SimpleImageView extends SimpleDraweeView {
+public class SquareDraweeView extends SimpleDraweeView {
 
 
-    public SimpleImageView(Context context) {
+    public SquareDraweeView(Context context) {
         this(context, null);
     }
 
-    public SimpleImageView(Context context, AttributeSet attrs) {
+    public SquareDraweeView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SimpleImageView(Context context, AttributeSet attrs, int defStyle) {
+    public SquareDraweeView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

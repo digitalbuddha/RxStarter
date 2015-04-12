@@ -32,7 +32,7 @@ public class ImageCardView extends LinearLayout {
     public void bindUserData(Result image) {
         if(image!=null) {
             Uri uri = Uri.parse(image.getUnescapedUrl());
-            SimpleImageView draweeView = (SimpleImageView) findViewById(R.id.avatar);
+            SquareDraweeView draweeView = (SquareDraweeView) findViewById(R.id.avatar);
             draweeView.setImageURI(uri);
         }
 

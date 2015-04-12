@@ -8,6 +8,7 @@ import android.view.Window;
 
 import com.digitalbuddha.rx.demo.R;
 import com.rx.demo.di.ImageSearchModule;
+import com.rx.demo.ui.animation.FlipAnimation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,11 @@ public class SearchActivity extends BaseActivity {
     private View left;
     private View right;
 
+    /**
+     * inflate search and history view and add the to container
+     * set click listener for history button
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

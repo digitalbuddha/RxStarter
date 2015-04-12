@@ -23,7 +23,7 @@ import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.Result;
 import com.rx.demo.ui.activity.SearchActivity;
 import com.rx.demo.ui.view.HistoryView;
-import com.rx.demo.ui.view.ImageSearchView;
+import com.rx.demo.ui.view.SearchView;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -36,9 +36,9 @@ import rx.subjects.PublishSubject;
 
 @Module(
         injects = {SearchActivity.class,
-                ImageSearchView.class,
+                SearchView.class,
                 HistoryView.class},
-        addsTo = AndroidModule.class,
+        addsTo = GlobalModule.class,
         library = true)
 public class ImageSearchModule {
     private final SearchActivity activity;

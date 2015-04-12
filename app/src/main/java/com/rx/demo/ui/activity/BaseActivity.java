@@ -35,6 +35,11 @@ public abstract class BaseActivity extends Activity {
     @Inject
     SubscriptionManager subscriptionManager;
     ObjectGraph activityGraph;
+
+    /**
+     * creates a activity scoped object graph which adds to global graph
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);

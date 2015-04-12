@@ -26,9 +26,9 @@ import retrofit.RestAdapter;
 
 @Module(library = true,
         injects = {ImagesStore.class})
-public class AndroidModule {
+public class GlobalModule {
 
-    public AndroidModule() {}
+    public GlobalModule() {}
 
     @Provides
     @Singleton

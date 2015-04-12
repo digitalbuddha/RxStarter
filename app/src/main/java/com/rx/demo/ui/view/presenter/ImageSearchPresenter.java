@@ -10,7 +10,7 @@ import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.ImageRequest;
 import com.rx.demo.model.ImageResponse;
 import com.rx.demo.model.Result;
-import com.rx.demo.ui.view.ImageSearchView;
+import com.rx.demo.ui.view.SearchView;
 import com.rx.demo.util.SubscriptionManager;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class ImageSearchPresenter implements IViewPresenter {
     @HistoryViewBus
     PublishSubject<String> historyViewBus;
 
-    private ImageSearchView view;
+    private SearchView view;
 
     /**
      * Binds to view
@@ -58,7 +58,7 @@ public class ImageSearchPresenter implements IViewPresenter {
     @Override
     public void takeView(View view) {
         if (view == null) return;
-        this.view = (ImageSearchView) view;
+        this.view = (SearchView) view;
         initBus();
         subscribeToSearchTerm();
         addOnScrollListener();

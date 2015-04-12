@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ImageSearchView extends ScrollView {
+public class SearchView extends ScrollView {
     @InjectView(R.id.searchBox)
     EditText search;
     @InjectView(R.id.cards)
@@ -32,15 +32,15 @@ public class ImageSearchView extends ScrollView {
     Handler handler;
 
 
-    public ImageSearchView(Context context) {
+    public SearchView(Context context) {
         this(context, null);
     }
 
-    public ImageSearchView(Context context, AttributeSet attrs) {
+    public SearchView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ImageSearchView(Context context, AttributeSet attrs, int defStyle) {
+    public SearchView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         ((BaseActivity) context).inject(this);
     }

@@ -18,7 +18,7 @@ package com.rx.demo;
 import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.rx.demo.di.AndroidModule;
+import com.rx.demo.di.GlobalModule;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +41,6 @@ public class DemoApplication extends Application {
     }
 
     protected List<Object> getModules() {
-        return Arrays.asList(new AndroidModule());
+        return Arrays.asList(new GlobalModule());
     }
 }
