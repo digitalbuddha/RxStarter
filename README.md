@@ -11,5 +11,6 @@ http://www.slideshare.net/nakhimovich/intro-to-functional-programming-with-rxjav
 
 
 Change Log
-4/19/2015 - Renamed Comannder to DAO
+
+4/19/2015 - Renamed Commander to DAO
 
