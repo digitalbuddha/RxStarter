@@ -1,7 +1,5 @@
 package com.rx.demo.dao;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 
 import java.util.Collections;
@@ -41,11 +39,8 @@ public abstract class RxDao<T, V> {
     }
 
     public Observable<V> get(final T request) {
-        Log.e(this.getClass().getName(), "rx get");
         V cachedValue = getCachedValue(request);
-
-        Observable<V> result = cachedValue == null ? fresh(request) : cached(request);
-        return result;
+        return cachedValue == null ? fresh(request) : cached(request);
     }
 
     boolean isInFlightNetwork(T request) {
@@ -84,13 +79,10 @@ public abstract class RxDao<T, V> {
     private V getCachedValue(T request) {
         V v = cachedResponses.get(json(request));
         if (v != null) {
-            Log.e(this.getClass().getName(), "rx cache get");
             onNextObservable.onNext(v);
         }
         //TODO: make a defensive copy of the cached value in case V is mutable
-
         return v;
-
     }
 
     protected Observable<V> registerResponse(final T request, final Observable<V> response) {

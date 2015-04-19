@@ -33,14 +33,14 @@ public class ImageSearchPresenter implements IViewPresenter {
     Queue<Result> que;
 
     @Inject
-    ImageDao store;
+    ImageDao dao;
 
     @Inject
     SubscriptionManager subs;
 
     @Inject
     @ImageViewBus
-    PublishSubject<Object> imageViewBus;
+    PublishSubject<Object> imagesBus;
 
     @Inject
     @HistoryViewBus
@@ -59,33 +59,59 @@ public class ImageSearchPresenter implements IViewPresenter {
     public void takeView(View view) {
         if (view == null) return;
         this.view = (SearchView) view;
-        initBus();
-        subscribeToSearchTerm();
+        initSubs();
         addOnScrollListener();
     }
 
-
+    private Observable<String> searchTermObservable() {
+        return WidgetObservable.text(view.getSearchView())
+                .map(onTextChangeEvent -> onTextChangeEvent.text().toString())
+                .filter(searchTerm -> searchTerm.length() > 0)
+                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .doOnNext(results -> clearResults())
+                .doOnNext(getHistoryViewBus()::onNext);
+    }
     /**
-     * sets up request stream
+     * when a new search occurs
+     * clear results and queue
+     * emit new search terms to history view bus
+     * request images
+     * subscribe with imagesBus
      * <p>
-     * images become available -> emit to imageViewBus
+     * images become available -> emit to imagesBus
      * <p>
-     * on emit to imageViewBus -> try to add new rows
+     * on emit to imagesBus -> try to add new rows
      * <p>
-     * NOTE: imageViewBus drops events followed by another event within 500ms
+     * NOTE: imagesBus drops events followed by another event within 300ms
      */
-    void initBus() {
-        subs.add(store.onNextObservable()
-                .filter(imageResponse -> imageResponse.getResponseData() != null)
+    void initSubs() {
+        searchTermObservable()
+                .observeOn(Schedulers.io())
+                .flatMap(s -> dao.fetchImageResults(new ImageRequest(s)))
                 .flatMap(this::streamOfImages)
                 .doOnNext(this::addToQueue)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(imageViewBus));
+                .doOnError(throwable -> {
+                    throw new RuntimeException(throwable);
+                })
+                .subscribe(imagesBus);
 
-        imageViewBus.debounce(300, TimeUnit.MILLISECONDS)
+        imagesBus.debounce(200, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> addRows());
+    }
+
+
+
+    /**
+     * If scrolled to last row, emit new item to imagesBus
+     */
+    private void addOnScrollListener() {
+        view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            if (isLastRowVisible() && que.size() != 0) {
+                imagesBus.onNext(que.peek());
+            }
+        });
     }
 
     /**
@@ -106,24 +132,6 @@ public class ImageSearchPresenter implements IViewPresenter {
     protected void displayNextRow() {
         List<Result> images = getImageFromQueue();
         if (images.size() > 0) view.addRow(images);
-    }
-
-    /**
-     * when a new search occurs
-     * clear results and queue
-     * emit new search terms to history view bus
-     * kick off request of images
-     */
-    private void subscribeToSearchTerm() {
-        rxSearchTerm()
-                .doOnNext(results -> clearResults())
-                .doOnNext(getHistoryViewBus()::onNext)
-                .observeOn(Schedulers.io())
-                .flatMap(s -> firstImages(new ImageRequest(s)))
-                .doOnError(throwable -> {
-                    throw new RuntimeException(throwable);
-                })
-                .subscribe();
     }
 
 
@@ -177,7 +185,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      * @return Observable Image response containing first page of image results
      */
     private Observable<ImageResponse> firstImages(ImageRequest imageRequest) {
-        return store.fetchImageResults(imageRequest);
+        return dao.fetchImageResults(imageRequest);
     }
 
     /**
@@ -193,18 +201,6 @@ public class ImageSearchPresenter implements IViewPresenter {
         return lastRow == null || lastRow.getLocalVisibleRect(scrollBounds);
     }
 
-    /**
-     * If scrolled to last row, emit new item to imageViewBus
-     */
-    private void addOnScrollListener() {
-        view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            if (isLastRowVisible()) {
-                if (que.size() != 0) {
-                    imageViewBus.onNext(new Object());
-                }
-            }
-        });
-    }
 
     /**
      * @return 3 images from queue

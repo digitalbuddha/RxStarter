@@ -5,12 +5,11 @@ import com.rx.demo.model.ImageResponse;
 import com.rx.demo.model.Page;
 import com.rx.demo.rest.ImagesApi;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 @Singleton
 public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
@@ -24,20 +23,8 @@ public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
 
     public Observable<ImageResponse> fetchImageResults(ImageRequest request) {
         return super.get(request)
-                .doOnNext(imageResponse ->
-                {
-                    if(imageResponse.getResponseData()!=null)
-                        getAllPages(imageResponse.getResponseData().getCursor().getPages(), request.getSearchTerm());
-                }
-                );
-    }
-
-
-
-    private void getAllPages(List<Page> pages, String searchTerm) {
-        //first page already cached
-        for (int i = 1; i < pages.size(); i++) {
-            get(new ImageRequest(searchTerm, pages.get(i).getStart())).subscribe();
-        }
+                .flatMap(imageResponse -> Observable.from(imageResponse.getResponseData().getCursor().getPages()))
+                .observeOn(Schedulers.newThread())
+                .flatMap((Page page) -> get(new ImageRequest(request.getSearchTerm(), page.getStart())));
     }
 }

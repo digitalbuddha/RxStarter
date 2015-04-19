@@ -78,7 +78,7 @@ public class SearchView extends ScrollView {
             parent.getChildAt(parent.getChildCount() - 1).setVisibility(INVISIBLE);
         }
 
-        handler.postDelayed(controller::addRows, 200);
+        handler.postDelayed(controller::addRows, 100);
     }
 
     /**
