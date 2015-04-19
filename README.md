@@ -3,10 +3,11 @@ RxJava Showcase Project
 
 Sample Setup with Retrofit, RxJava  and Dagger.
 
-Article:
+Blog post explaining some of the libaries used:
 https://medium.com/@theMikhail/take-command-of-android-development-9411af8cf571
 
-Slides on RxJava: http://www.slideshare.net/nakhimovich/intro-to-functional-programming-with-rxjava
+Slides from NYCJava talk on RxJava: 
+http://www.slideshare.net/nakhimovich/intro-to-functional-programming-with-rxjava
 
 
 Change Log
