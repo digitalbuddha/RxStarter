@@ -9,8 +9,6 @@
 
     <ViewFlipper
         android:id="@+id/container"
-        android:inAnimation="@anim/slide_in_from_left"
-        android:outAnimation="@anim/slide_out_to_right"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </ViewFlipper>
