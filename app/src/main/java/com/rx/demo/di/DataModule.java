@@ -15,7 +15,7 @@
  */
 package com.rx.demo.di;
 
-import com.rx.demo.commander.ImagesStore;
+import com.rx.demo.dao.ImageDao;
 import com.rx.demo.rest.ImagesApi;
 
 import javax.inject.Singleton;
@@ -25,10 +25,10 @@ import dagger.Provides;
 import retrofit.RestAdapter;
 
 @Module(library = true,
-        injects = {ImagesStore.class})
-public class GlobalModule {
+        injects = {ImageDao.class})
+public class DataModule {
 
-    public GlobalModule() {}
+    public DataModule() {}
 
     @Provides
     @Singleton

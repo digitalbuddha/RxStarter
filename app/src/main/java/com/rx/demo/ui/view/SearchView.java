@@ -45,12 +45,12 @@ public class SearchView extends ScrollView {
         ((BaseActivity) context).inject(this);
     }
 
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.inject(this);
         controller.takeView(this);
-
     }
 
 
