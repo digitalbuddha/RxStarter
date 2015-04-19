@@ -28,6 +28,6 @@
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="28dp"
         android:scaleType="fitCenter"
-        android:contentDescription="history" />
+        android:contentDescription="@string/history" />
 
 </RelativeLayout>

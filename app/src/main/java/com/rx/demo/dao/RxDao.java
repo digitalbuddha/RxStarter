@@ -1,45 +1,51 @@
-package com.rx.demo.commander;
+package com.rx.demo.dao;
 
 import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-import static rx.Observable.*;
+import static rx.Observable.create;
+import static rx.Observable.just;
 
 
 //T = request type, V = response type
-public abstract class RxStore<T, V> {
+public abstract class RxDao<T, V> {
     private final Map<String, V> cachedResponses;
     protected Map<String, Observable<V>> inFlightRequests = new HashMap<>();
+    protected PublishSubject<V> onNextObservable = PublishSubject.create();
     protected PublishSubject<V> updateObservable = PublishSubject.create();
-    private Gson gson=new Gson();
+    private Gson gson = new Gson();
 
-    public RxStore() {
+    public RxDao() {
         cachedResponses = Collections.synchronizedMap(new HashMap<>());
         inFlightRequests = Collections.synchronizedMap(new HashMap<>());
     }
-
 
     public Observable<V> fresh(final T request) {
         return isInFlightNetwork(request) ? inFlightResponse(request) : response(request);
     }
 
+    public Observable<V> cached(final T request) {
+        return just(getCachedValue(request));
+    }
+
+    public Observable<V> all(final T request) {
+        return fresh(request).startWith(cached(request));
+    }
+
     public Observable<V> get(final T request) {
-        Log.e(this.getClass().getName(),"rx get");
+        Log.e(this.getClass().getName(), "rx get");
         V cachedValue = getCachedValue(request);
 
-        //returning a cached fresh response to prevent operators such as repeat from hitting network more than once.
-        Observable<V> result = cachedValue == null ? fresh(request).cache() : just(cachedValue);
-        return result.doOnNext(updateObservable::onNext);
+        Observable<V> result = cachedValue == null ? fresh(request) : cached(request);
+        return result;
     }
 
     boolean isInFlightNetwork(T request) {
@@ -55,11 +61,6 @@ public abstract class RxStore<T, V> {
 
     private String json(T request) {
         return gson.toJson(request);
-    }
-
-    protected void cacheRequest(T request)
-    {
-        get(request).subscribeOn(Schedulers.io()).subscribe();
     }
 
     protected Observable<V> response(final T request) {
@@ -82,28 +83,29 @@ public abstract class RxStore<T, V> {
 
     private V getCachedValue(T request) {
         V v = cachedResponses.get(json(request));
-        if(v!=null)
-        {
-            Log.e(this.getClass().getName(),"rx cache get");
-
+        if (v != null) {
+            Log.e(this.getClass().getName(), "rx cache get");
+            onNextObservable.onNext(v);
         }
+        //TODO: make a defensive copy of the cached value in case V is mutable
+
         return v;
+
     }
 
     protected Observable<V> registerResponse(final T request, final Observable<V> response) {
         return response
                 .doOnSubscribe(() -> inFlightRequests.put(json(request), response))
-                .doOnCompleted(() -> inFlightRequests.remove(json(request)));
-
+                .doOnCompleted(() -> inFlightRequests.remove(json(request))).doOnNext(updateObservable::onNext);
     }
 
 
     public Observable<V> onNextObservable() {
-        return updateObservable;
+        return onNextObservable.asObservable();
     }
 
-    public ArrayList<V> getCachedResponses() {
-        return new ArrayList<V>(cachedResponses.values());
+    public Observable<V> onUpdateObservable() {
+        return updateObservable.asObservable();
     }
 }
 

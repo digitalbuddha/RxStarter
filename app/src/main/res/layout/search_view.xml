@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="@color/bg_gray"
     android:id="@+id/suggestionBox">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,17 +23,12 @@
             android:textColorHint="@color/slider_gray"
             android:hint="@string/search_hint"
             android:padding="8dp"/>
-
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/cards"
             android:orientation="vertical">
         </LinearLayout>
-
-
     </LinearLayout>
 </com.rx.demo.ui.view.SearchView>
 

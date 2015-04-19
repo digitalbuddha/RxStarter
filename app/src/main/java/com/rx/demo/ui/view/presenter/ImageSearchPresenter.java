@@ -4,7 +4,7 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.view.View;
 
-import com.rx.demo.commander.ImagesStore;
+import com.rx.demo.dao.ImageDao;
 import com.rx.demo.di.annotation.HistoryViewBus;
 import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.ImageRequest;
@@ -33,7 +33,7 @@ public class ImageSearchPresenter implements IViewPresenter {
     Queue<Result> que;
 
     @Inject
-    ImagesStore store;
+    ImageDao store;
 
     @Inject
     SubscriptionManager subs;
@@ -86,8 +86,6 @@ public class ImageSearchPresenter implements IViewPresenter {
         imageViewBus.debounce(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> addRows());
-
-
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.rx.demo.commander;
+package com.rx.demo.dao;
 
 import com.rx.demo.model.ImageRequest;
 import com.rx.demo.model.ImageResponse;
@@ -13,7 +13,7 @@ import javax.inject.Singleton;
 import rx.Observable;
 
 @Singleton
-public class ImagesStore extends RxStore<ImageRequest, ImageResponse> {
+public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
     @Inject
     ImagesApi api;
 
@@ -27,17 +27,17 @@ public class ImagesStore extends RxStore<ImageRequest, ImageResponse> {
                 .doOnNext(imageResponse ->
                 {
                     if(imageResponse.getResponseData()!=null)
-                        cacheAllPages(imageResponse.getResponseData().getCursor().getPages(), request.getSearchTerm());
+                        getAllPages(imageResponse.getResponseData().getCursor().getPages(), request.getSearchTerm());
                 }
                 );
     }
 
 
 
-    private void cacheAllPages(List<Page> pages, String searchTerm) {
+    private void getAllPages(List<Page> pages, String searchTerm) {
         //first page already cached
         for (int i = 1; i < pages.size(); i++) {
-            cacheRequest(new ImageRequest(searchTerm, pages.get(i).getStart()));
+            get(new ImageRequest(searchTerm, pages.get(i).getStart())).subscribe();
         }
     }
 }

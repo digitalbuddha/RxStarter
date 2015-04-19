@@ -38,12 +38,12 @@ import rx.subjects.PublishSubject;
         injects = {SearchActivity.class,
                 SearchView.class,
                 HistoryView.class},
-        addsTo = GlobalModule.class,
+        addsTo = DataModule.class,
         library = true)
-public class ImageSearchModule {
+public class UiModule {
     private final SearchActivity activity;
 
-    public ImageSearchModule(SearchActivity activity) {
+    public UiModule(SearchActivity activity) {
         this.activity = activity;
     }
 

@@ -6,7 +6,7 @@ import android.view.Window;
 import android.widget.ViewFlipper;
 
 import com.digitalbuddha.rx.demo.R;
-import com.rx.demo.di.ImageSearchModule;
+import com.rx.demo.di.UiModule;
 import com.rx.demo.ui.animation.AnimationFactory;
 
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class SearchActivity extends BaseActivity {
     }
 
     protected List<Object> getModules() {
-        return Arrays.asList(new ImageSearchModule(this));
+        return Arrays.asList(new UiModule(this));
     }
 
     public void flipViews() {
