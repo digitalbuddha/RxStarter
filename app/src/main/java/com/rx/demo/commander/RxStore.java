@@ -37,8 +37,7 @@ public abstract class RxStore<T, V> {
         Log.e(this.getClass().getName(),"rx get");
         V cachedValue = getCachedValue(request);
 
-        //returning a cached fresh response to prevent operators such as repeat from hitting network more than once.
-        Observable<V> result = cachedValue == null ? fresh(request).cache() : just(cachedValue);
+        Observable<V> result = cachedValue == null ? fresh(request) : just(cachedValue);
         return result.doOnNext(updateObservable::onNext);
     }
 
