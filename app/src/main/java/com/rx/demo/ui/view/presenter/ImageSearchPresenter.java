@@ -62,7 +62,14 @@ public class ImageSearchPresenter implements IViewPresenter {
         initSubs();
         addOnScrollListener();
     }
-
+    /**
+     * subscribes to search view
+     * transforms the onTextChange event into the search String
+     * filters any blank searches
+     * emits only the last emitted value when no search for 1 second
+     *
+     * @return Observable containing the search term
+     */
     private Observable<String> searchTermObservable() {
         return WidgetObservable.text(view.getSearchView())
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString())
@@ -71,6 +78,7 @@ public class ImageSearchPresenter implements IViewPresenter {
                 .doOnNext(results -> clearResults())
                 .doOnNext(getHistoryViewBus()::onNext);
     }
+
     /**
      * when a new search occurs
      * clear results and queue
@@ -85,22 +93,21 @@ public class ImageSearchPresenter implements IViewPresenter {
      * NOTE: imagesBus drops events followed by another event within 300ms
      */
     void initSubs() {
+
         searchTermObservable()
                 .observeOn(Schedulers.io())
                 .flatMap(s -> dao.fetchImageResults(new ImageRequest(s)))
                 .flatMap(this::streamOfImages)
                 .doOnNext(this::addToQueue)
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> {
                     throw new RuntimeException(throwable);
                 })
                 .subscribe(imagesBus);
 
-        imagesBus.debounce(200, TimeUnit.MILLISECONDS)
+        imagesBus.buffer(50, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> addRows());
     }
-
 
 
     /**
@@ -120,7 +127,6 @@ public class ImageSearchPresenter implements IViewPresenter {
     public void addRows() {
         if (isLastRowVisible()) {
             Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
-            displayNextRow();
             displayNextRow();
         }
     }
@@ -148,20 +154,7 @@ public class ImageSearchPresenter implements IViewPresenter {
         que.add(t1);
     }
 
-    /**
-     * subscribes to search view
-     * transforms the onTextChange event into the search String
-     * filters any blank searches
-     * emits only the last emitted value when no search for 1 second
-     *
-     * @return Observable containing the search term
-     */
-    public Observable<String> rxSearchTerm() {
-        return WidgetObservable.text(view.getSearchView())
-                .map(onTextChangeEvent -> onTextChangeEvent.text().toString())
-                .filter(searchTerm -> searchTerm.length() > 0)
-                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread());
-    }
+
 
     /**
      * creates observable that emits stream of images from a single image response
@@ -194,7 +187,9 @@ public class ImageSearchPresenter implements IViewPresenter {
      * @return boolean
      */
     public boolean isLastRowVisible() {
-        if (que.size() == 0) return false;
+        if (que.size() == 0|| view==null) {
+            return false;
+        }
         Rect scrollBounds = new Rect();
         view.cardsLayout.getHitRect(scrollBounds);
         View lastRow = view.cardsLayout.getChildAt(view.cardsLayout.getChildCount() - 1);

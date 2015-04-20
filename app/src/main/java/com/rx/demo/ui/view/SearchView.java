@@ -65,7 +65,9 @@ public class SearchView extends ScrollView {
      * @param images image data
      */
     public void addRow(List<Result> images) {
-        ViewGroup row = getLastResultsRow();
+        if (controller.isLastRowVisible()) {
+
+            ViewGroup row = getLastResultsRow();
         LinearLayout parent;
         for (Result image : images) {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
@@ -77,8 +79,8 @@ public class SearchView extends ScrollView {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
             parent.getChildAt(parent.getChildCount() - 1).setVisibility(INVISIBLE);
         }
-
-        handler.postDelayed(controller::addRows, 100);
+            handler.postDelayed(controller::addRows, 50);
+        }
     }
 
     /**

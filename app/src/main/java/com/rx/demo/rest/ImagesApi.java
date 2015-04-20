@@ -11,5 +11,7 @@ import retrofit.http.Query;
 public interface ImagesApi {
     @GET("/images?v=1.0&imgsz=medium")
     ImageResponse getPage(@Query("q") String searchTerm, @Query("start") String offset);
+    @GET("/images?v=1.0&imgsz=medium")
+    ImageResponse getPage();
 
 }
