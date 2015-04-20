@@ -3,6 +3,7 @@ package com.rx.demo.ui.view;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -65,7 +66,9 @@ public class SearchView extends ScrollView {
      * @param images image data
      */
     public void addRow(List<Result> images) {
-        ViewGroup row = getLastResultsRow();
+        if (controller.isLastRowVisible()&& !images.isEmpty()) {
+            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
+            ViewGroup row = getLastResultsRow();
         LinearLayout parent;
         for (Result image : images) {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
@@ -77,8 +80,8 @@ public class SearchView extends ScrollView {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
             parent.getChildAt(parent.getChildCount() - 1).setVisibility(INVISIBLE);
         }
-
-        handler.postDelayed(controller::addRows, 200);
+            handler.postDelayed(controller::displayNextRow, 50);
+        }
     }
 
     /**
