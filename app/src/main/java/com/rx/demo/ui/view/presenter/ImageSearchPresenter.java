@@ -1,7 +1,6 @@
 package com.rx.demo.ui.view.presenter;
 
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 
 import com.rx.demo.dao.ImageDao;
@@ -67,7 +66,9 @@ public class ImageSearchPresenter implements IViewPresenter {
      * transforms the onTextChange event into the search String
      * filters any blank searches
      * emits only the last emitted value when no search for 1 second
-     *
+     * on a new valid search occurs
+     * clear screen and queue
+     * emit new search terms to history view bus
      * @return Observable containing the search term
      */
     private Observable<String> searchTermObservable() {
@@ -80,10 +81,7 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
     /**
-     * when a new search occurs
-     * clear results and queue
-     * emit new search terms to history view bus
-     * request images
+     * on search term change request images
      * subscribe with imagesBus
      * <p>
      * images become available -> emit to imagesBus
@@ -92,7 +90,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      * <p>
      * NOTE: imagesBus drops events followed by another event within 300ms
      */
-    void initSubs() {
+   private void initSubs() {
 
         searchTermObservable()
                 .observeOn(Schedulers.io())
@@ -105,8 +103,9 @@ public class ImageSearchPresenter implements IViewPresenter {
                 .subscribe(imagesBus);
 
         imagesBus.buffer(50, TimeUnit.MILLISECONDS)
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(o -> addRows());
+                .subscribe(o -> displayNextRow());
     }
 
 
@@ -115,29 +114,20 @@ public class ImageSearchPresenter implements IViewPresenter {
      */
     private void addOnScrollListener() {
         view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            if (isLastRowVisible() && que.size() != 0) {
+            if (isLastRowVisible() && que.size()> 0) {
                 imagesBus.onNext(que.peek());
             }
         });
     }
 
     /**
-     * if last row of images is visible, create 2 more rows
-     */
-    public void addRows() {
-        if (isLastRowVisible()) {
-            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
-            displayNextRow();
-        }
-    }
-
-
-    /**
      * gets images from queue and binds to newly created views
      */
-    protected void displayNextRow() {
-        List<Result> images = getImageFromQueue();
-        if (images.size() > 0) view.addRow(images);
+    public void displayNextRow() {
+        if (isLastRowVisible()) {
+            List<Result> images = getImageFromQueue();
+            if (images.size() > 0) view.addRow(images);
+        }
     }
 
 
@@ -170,16 +160,7 @@ public class ImageSearchPresenter implements IViewPresenter {
         que.clear();
     }
 
-    /**
-     * kicks of network request for search term
-     * as well as caching all addl pages
-     *
-     * @param imageRequest search term
-     * @return Observable Image response containing first page of image results
-     */
-    private Observable<ImageResponse> firstImages(ImageRequest imageRequest) {
-        return dao.fetchImageResults(imageRequest);
-    }
+
 
     /**
      * determines whether the last row of images is visible on the screen
