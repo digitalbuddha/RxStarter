@@ -24,10 +24,13 @@ import static butterknife.ButterKnife.findById;
 public class SearchActivity extends BaseActivity {
 
     public static final int SEARCH_VIEW_POSITION = 0;
+
     @InjectView(R.id.container)
     ViewFlipper flipper;
+
     @InjectView(R.id.history)
     View historyButton;
+
     @Icicle
     int selectedPosition = 0;
 
@@ -44,6 +47,7 @@ public class SearchActivity extends BaseActivity {
         //Remove title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_layout);
+
         ButterKnife.inject(this);
         flipper = findById(this, R.id.container);
         getLayoutInflater().inflate(R.layout.search_view, flipper);

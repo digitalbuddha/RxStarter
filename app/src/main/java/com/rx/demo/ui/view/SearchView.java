@@ -47,6 +47,8 @@ public class SearchView extends ScrollView {
     }
 
 
+
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -54,6 +56,12 @@ public class SearchView extends ScrollView {
         controller.takeView(this);
     }
 
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        handler.postDelayed(controller::displayNextRow, 50);
+    }
 
     /**
      * Inflate a new row

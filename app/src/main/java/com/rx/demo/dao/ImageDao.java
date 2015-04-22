@@ -3,6 +3,7 @@ package com.rx.demo.dao;
 import com.rx.demo.model.ImageRequest;
 import com.rx.demo.model.ImageResponse;
 import com.rx.demo.model.Page;
+import com.rx.demo.model.Result;
 import com.rx.demo.rest.ImagesApi;
 
 import javax.inject.Inject;
@@ -21,10 +22,25 @@ public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
         return api.getPage(request.getSearchTerm(), request.getOffset());
     }
 
-    public Observable<ImageResponse> fetchImageResults(ImageRequest request) {
+    public Observable<Result> fetchImageResults(ImageRequest request) {
         return super.get(request)
                 .flatMap(imageResponse -> Observable.from(imageResponse.getResponseData().getCursor().getPages()))
                 .observeOn(Schedulers.newThread())
-                .flatMap((Page page) -> get(new ImageRequest(request.getSearchTerm(), page.getStart())));
+                .concatMap((Page page) -> get(new ImageRequest(request.getSearchTerm(), page.getStart())))
+                .concatMap(this::streamOfImages);
+
+
     }
+
+
+    /**
+     * creates observable that emits stream of images from a single image response
+     *
+     * @param imageResponse
+     * @return Observable that emit individual image results
+     */
+    private Observable<Result> streamOfImages(ImageResponse imageResponse) {
+        return Observable.from(imageResponse.getResponseData().getResults());
+    }
+
 }

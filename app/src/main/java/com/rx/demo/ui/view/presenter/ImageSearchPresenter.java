@@ -7,7 +7,6 @@ import com.rx.demo.dao.ImageDao;
 import com.rx.demo.di.annotation.HistoryViewBus;
 import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.ImageRequest;
-import com.rx.demo.model.ImageResponse;
 import com.rx.demo.model.Result;
 import com.rx.demo.ui.view.SearchView;
 import com.rx.demo.util.SubscriptionManager;
@@ -95,15 +94,15 @@ public class ImageSearchPresenter implements IViewPresenter {
         searchTermObservable()
                 .observeOn(Schedulers.io())
                 .flatMap(s -> dao.fetchImageResults(new ImageRequest(s)))
-                .flatMap(this::streamOfImages)
                 .doOnNext(this::addToQueue)
                 .doOnError(throwable -> {
                     throw new RuntimeException(throwable);
                 })
                 .subscribe(imagesBus);
 
-        imagesBus.buffer(50, TimeUnit.MILLISECONDS)
+        imagesBus.debounce(50, TimeUnit.MILLISECONDS)
                 .onBackpressureBuffer()
+                .filter(o->isLastRowVisible())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> displayNextRow());
     }
@@ -114,9 +113,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      */
     private void addOnScrollListener() {
         view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            if (isLastRowVisible() && que.size()> 0) {
                 imagesBus.onNext(que.peek());
-            }
         });
     }
 
@@ -124,10 +121,8 @@ public class ImageSearchPresenter implements IViewPresenter {
      * gets images from queue and binds to newly created views
      */
     public void displayNextRow() {
-        if (isLastRowVisible()) {
             List<Result> images = getImageFromQueue();
             if (images.size() > 0) view.addRow(images);
-        }
     }
 
 
@@ -145,16 +140,6 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
 
-
-    /**
-     * creates observable that emits stream of images from a single image response
-     *
-     * @param imageResponse
-     * @return Observable that emit individual image results
-     */
-    private Observable<Result> streamOfImages(ImageResponse imageResponse) {
-        return Observable.from(imageResponse.getResponseData().getResults());
-    }
 
     public void clearImageQueue() {
         que.clear();
