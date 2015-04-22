@@ -47,8 +47,6 @@ public class SearchView extends ScrollView {
     }
 
 
-
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -74,22 +72,19 @@ public class SearchView extends ScrollView {
      * @param images image data
      */
     public void addRow(List<Result> images) {
-        if (controller.isLastRowVisible()&& !images.isEmpty()) {
-            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
-            ViewGroup row = getLastResultsRow();
+        Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
+        ViewGroup row = getLastResultsRow();
         LinearLayout parent;
         for (Result image : images) {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
             ImageCardView imageCard = (ImageCardView) parent.getChildAt(parent.getChildCount() - 1);
             imageCard.bindUserData(image);
         }
-
         while (row.getChildCount() < 3) {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
             parent.getChildAt(parent.getChildCount() - 1).setVisibility(INVISIBLE);
         }
-            handler.postDelayed(controller::displayNextRow, 50);
-        }
+        controller.requestNextRow();
     }
 
     /**

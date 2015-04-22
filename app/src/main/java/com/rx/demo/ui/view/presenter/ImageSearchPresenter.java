@@ -60,6 +60,7 @@ public class ImageSearchPresenter implements IViewPresenter {
         initSubs();
         addOnScrollListener();
     }
+
     /**
      * subscribes to search view
      * transforms the onTextChange event into the search String
@@ -68,13 +69,14 @@ public class ImageSearchPresenter implements IViewPresenter {
      * on a new valid search occurs
      * clear screen and queue
      * emit new search terms to history view bus
+     *
      * @return Observable containing the search term
      */
     private Observable<String> searchTermObservable() {
         return WidgetObservable.text(view.getSearchView())
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString())
                 .filter(searchTerm -> searchTerm.length() > 0)
-                .debounce(1000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .doOnNext(results -> clearResults())
                 .doOnNext(getHistoryViewBus()::onNext);
     }
@@ -89,7 +91,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      * <p>
      * NOTE: imagesBus drops events followed by another event within 300ms
      */
-   private void initSubs() {
+    private void initSubs() {
 
         searchTermObservable()
                 .observeOn(Schedulers.io())
@@ -100,9 +102,8 @@ public class ImageSearchPresenter implements IViewPresenter {
                 })
                 .subscribe(imagesBus);
 
-        imagesBus.debounce(50, TimeUnit.MILLISECONDS)
-                .onBackpressureBuffer()
-                .filter(o->isLastRowVisible())
+        imagesBus.debounce(50, TimeUnit.MILLISECONDS, Schedulers.computation())
+                .filter(o -> isLastRowVisible() && que.size()>3)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> displayNextRow());
     }
@@ -113,7 +114,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      */
     private void addOnScrollListener() {
         view.cardsLayout.getViewTreeObserver().addOnScrollChangedListener(() -> {
-                imagesBus.onNext(que.peek());
+            imagesBus.onNext(que.peek());
         });
     }
 
@@ -121,8 +122,13 @@ public class ImageSearchPresenter implements IViewPresenter {
      * gets images from queue and binds to newly created views
      */
     public void displayNextRow() {
-            List<Result> images = getImageFromQueue();
-            if (images.size() > 0) view.addRow(images);
+        List<Result> images = getImageFromQueue();
+        if (images.size() > 0) view.addRow(images);
+
+    }
+
+    public void requestNextRow() {
+        imagesBus.onNext(que.peek());
     }
 
 
@@ -140,11 +146,9 @@ public class ImageSearchPresenter implements IViewPresenter {
     }
 
 
-
     public void clearImageQueue() {
         que.clear();
     }
-
 
 
     /**
@@ -153,7 +157,7 @@ public class ImageSearchPresenter implements IViewPresenter {
      * @return boolean
      */
     public boolean isLastRowVisible() {
-        if (que.size() == 0|| view==null) {
+        if (que.size() == 0 || view == null) {
             return false;
         }
         Rect scrollBounds = new Rect();
