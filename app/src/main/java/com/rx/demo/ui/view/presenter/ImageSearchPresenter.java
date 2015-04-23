@@ -12,8 +12,6 @@ import com.rx.demo.model.Result;
 import com.rx.demo.ui.view.SearchView;
 import com.rx.demo.util.SubscriptionManager;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -96,7 +94,7 @@ public class ImageSearchPresenter implements IViewPresenter {
         searchTermObservable()
                 .observeOn(Schedulers.io())
                 .flatMap(s -> dao.fetchImageResults(new ImageRequest(s)))
-                .doOnNext(this::addToQueue)
+                .doOnNext(que::add)
                 .doOnError(throwable -> {
                     throw new RuntimeException(throwable);
                 })
@@ -137,16 +135,6 @@ public class ImageSearchPresenter implements IViewPresenter {
      */
     public void clearResults() {
         view.cardsLayout.removeAllViews();
-        clearImageQueue();
-    }
-
-
-    private void addToQueue(Result t1) {
-        que.add(t1);
-    }
-
-
-    public void clearImageQueue() {
         que.clear();
     }
 
@@ -164,19 +152,6 @@ public class ImageSearchPresenter implements IViewPresenter {
         view.cardsLayout.getHitRect(scrollBounds);
         View lastRow = view.cardsLayout.getChildAt(view.cardsLayout.getChildCount() - 1);
         return lastRow == null || lastRow.getLocalVisibleRect(scrollBounds);
-    }
-
-
-    /**
-     * @return 3 images from queue
-     */
-    public List<Result> getImagesFromQueue() {
-        List<Result> images = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            if (que.size() > 0)
-                images.add(que.remove());
-        }
-        return images;
     }
 
     /**
