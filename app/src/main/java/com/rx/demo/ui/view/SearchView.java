@@ -8,11 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.digitalbuddha.rx.demo.R;
-import com.rx.demo.model.Result;
 import com.rx.demo.ui.activity.BaseActivity;
 import com.rx.demo.ui.view.presenter.ImageSearchPresenter;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -63,19 +60,11 @@ public class SearchView extends ScrollView {
      * Add row to container
      * <p>
      *
-     * @param images image data
      */
-    public void addRow(List<Result> images) {
+    public void addRow() {
         ViewGroup row = getLastResultsRow();
-        LinearLayout parent;
-        for (Result image : images) {
-            parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
-            ImageCardView imageCard = (ImageCardView) parent.getChildAt(parent.getChildCount() - 1);
-            imageCard.bindUserData(image);
-        }
         while (row.getChildCount() < 3) {
-            parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
-            parent.getChildAt(parent.getChildCount() - 1).setVisibility(INVISIBLE);
+          inflate(getContext(), R.layout.image_card, row);
         }
         presenter.drawNewRowIfNeeded();
     }

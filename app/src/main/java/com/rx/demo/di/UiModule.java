@@ -23,6 +23,7 @@ import com.rx.demo.di.annotation.ImageViewBus;
 import com.rx.demo.model.Result;
 import com.rx.demo.ui.activity.SearchActivity;
 import com.rx.demo.ui.view.HistoryView;
+import com.rx.demo.ui.view.ImageCardView;
 import com.rx.demo.ui.view.SearchView;
 
 import java.util.Queue;
@@ -37,7 +38,8 @@ import rx.subjects.PublishSubject;
 @Module(
         injects = {SearchActivity.class,
                 SearchView.class,
-                HistoryView.class},
+                HistoryView.class,
+                ImageCardView.class},
         addsTo = DataModule.class,
         library = true)
 public class UiModule {
@@ -67,7 +69,7 @@ public class UiModule {
 
     @Provides
     @Singleton
-   @ImageViewBus
+    @ImageViewBus
     PublishSubject<Object> provideSearchViewBus() {
         return PublishSubject.create();
     }

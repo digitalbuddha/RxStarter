@@ -93,7 +93,6 @@ public class ImageSearchPresenter implements IViewPresenter {
      * NOTE: imagesBus drops events followed by another event within 300ms
      */
     private void initSubs() {
-
         searchTermObservable()
                 .observeOn(Schedulers.io())
                 .flatMap(s -> dao.fetchImageResults(new ImageRequest(s)))
@@ -104,7 +103,7 @@ public class ImageSearchPresenter implements IViewPresenter {
                 .subscribe(imagesBus);
 
         imagesBus.debounce(50, TimeUnit.MILLISECONDS, Schedulers.computation())
-                .filter(o -> isLastRowVisible() && que.size()>3)
+                .filter(o -> isLastRowVisible() && que.size() > 3)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> displayNextRow());
     }
@@ -123,11 +122,9 @@ public class ImageSearchPresenter implements IViewPresenter {
      * gets images from queue and binds to newly created views
      */
     public void displayNextRow() {
-        List<Result> images = getImageFromQueue();
-        if (images.size() > 0) {
-            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
-            view.addRow(images);
-        }
+        Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
+        view.addRow();
+
     }
 
     public void drawNewRowIfNeeded() {
@@ -173,7 +170,7 @@ public class ImageSearchPresenter implements IViewPresenter {
     /**
      * @return 3 images from queue
      */
-    public List<Result> getImageFromQueue() {
+    public List<Result> getImagesFromQueue() {
         List<Result> images = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if (que.size() > 0)
