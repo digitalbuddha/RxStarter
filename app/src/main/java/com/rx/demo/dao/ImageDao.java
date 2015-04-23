@@ -28,8 +28,6 @@ public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
                 .observeOn(Schedulers.io())
                 .concatMap((Page page) -> getPage(request.getSearchTerm(), page))
                 .concatMap(this::streamOfImages);
-
-
     }
 
     private Observable<ImageResponse> getPage(String term, Page page) {

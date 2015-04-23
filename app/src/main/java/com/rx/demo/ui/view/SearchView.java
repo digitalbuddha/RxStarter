@@ -1,9 +1,7 @@
 package com.rx.demo.ui.view;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -28,9 +26,7 @@ public class SearchView extends ScrollView {
     public
     LinearLayout cardsLayout;
     @Inject
-    ImageSearchPresenter controller;
-    @Inject
-    Handler handler;
+    ImageSearchPresenter presenter;
 
 
     public SearchView(Context context) {
@@ -51,14 +47,14 @@ public class SearchView extends ScrollView {
     protected void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.inject(this);
-        controller.takeView(this);
+        presenter.takeView(this);
     }
 
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        handler.postDelayed(controller::displayNextRow, 50);
+        presenter.drawNewRowIfNeeded();
     }
 
     /**
@@ -66,13 +62,10 @@ public class SearchView extends ScrollView {
      * Bind data to row
      * Add row to container
      * <p>
-     * Note:putting a delay before drawing rows
-     * prevents jankiness with adding views while scrolling
      *
      * @param images image data
      */
     public void addRow(List<Result> images) {
-        Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
         ViewGroup row = getLastResultsRow();
         LinearLayout parent;
         for (Result image : images) {
@@ -84,7 +77,7 @@ public class SearchView extends ScrollView {
             parent = (LinearLayout) inflate(getContext(), R.layout.image_card, row);
             parent.getChildAt(parent.getChildCount() - 1).setVisibility(INVISIBLE);
         }
-        controller.requestNextRow();
+        presenter.drawNewRowIfNeeded();
     }
 
     /**
@@ -109,7 +102,7 @@ public class SearchView extends ScrollView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        controller.dropView();
+        presenter.dropView();
     }
 
     public EditText getSearchView() {
@@ -122,6 +115,6 @@ public class SearchView extends ScrollView {
 
     public void updateSearchView(String searchTerm) {
         search.setText(searchTerm);
-        controller.clearResults();
+        presenter.clearResults();
     }
 }

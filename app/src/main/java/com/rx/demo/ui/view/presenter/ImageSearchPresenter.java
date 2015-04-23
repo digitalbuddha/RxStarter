@@ -1,6 +1,7 @@
 package com.rx.demo.ui.view.presenter;
 
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.View;
 
 import com.rx.demo.dao.ImageDao;
@@ -123,11 +124,13 @@ public class ImageSearchPresenter implements IViewPresenter {
      */
     public void displayNextRow() {
         List<Result> images = getImageFromQueue();
-        if (images.size() > 0) view.addRow(images);
-
+        if (images.size() > 0) {
+            Log.e(this.getClass().getSimpleName(), "last row is visible on screen, load next rows");
+            view.addRow(images);
+        }
     }
 
-    public void requestNextRow() {
+    public void drawNewRowIfNeeded() {
         imagesBus.onNext(que.peek());
     }
 
