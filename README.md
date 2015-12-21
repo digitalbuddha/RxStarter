@@ -1,3 +1,8 @@
+
+Sneak Peak of next version:
+https://github.com/digitalbuddha/DAOFramework
+
+
 RxJava Showcase Project
 =============
 
@@ -6,9 +11,6 @@ Sample Setup with Retrofit, RxJava  and Dagger.
 
 Slides from NYCJava talk on RxJava: 
 http://www.slideshare.net/nakhimovich/intro-to-functional-programming-with-rxjava
-
-Sneak Peak of next version:
-https://github.com/digitalbuddha/StoreDemo
 
 Change Log
 
