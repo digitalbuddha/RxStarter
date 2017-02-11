@@ -25,7 +25,6 @@ public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
     public Observable<Result> fetchImageResults(ImageRequest request) {
         return load(request)
                 .flatMap(imageResponse -> Observable.from(imageResponse.getResponseData().getCursor().getPages()))
-                .observeOn(Schedulers.io())
                 .concatMap((Page page) -> getPage(request.getSearchTerm(), page))
                 .concatMap(this::streamOfImages);
     }
