@@ -23,7 +23,7 @@ public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
     }
 
     public Observable<Result> fetchImageResults(ImageRequest request) {
-        return super.get(request)
+        return load(request)
                 .flatMap(imageResponse -> Observable.from(imageResponse.getResponseData().getCursor().getPages()))
                 .observeOn(Schedulers.io())
                 .concatMap((Page page) -> getPage(request.getSearchTerm(), page))
@@ -31,7 +31,7 @@ public class ImageDao extends RxDao<ImageRequest, ImageResponse> {
     }
 
     private Observable<ImageResponse> getPage(String term, Page page) {
-        return get(new ImageRequest(term, page.getStart()));
+        return load(new ImageRequest(term, page.getStart()));
     }
 
     /**
